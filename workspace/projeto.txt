@@ -1,0 +1,10 @@
+PROJETO JARVIS — anotações
+
+Pasta de trabalho do JARVIS: ele só consegue ler e criar arquivos aqui dentro.
+Experimente na conversa:
+  "Leia meu arquivo projeto.txt"
+  "Liste meus arquivos"
+  "Procure por fase nos meus arquivos"
+
+Fase atual: núcleo (core + API + memória + router + ferramentas).
+Próxima fase: voz (microfone, fala → texto, texto → fala).

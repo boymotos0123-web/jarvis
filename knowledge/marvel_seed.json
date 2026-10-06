@@ -1,0 +1,1500 @@
+{
+ "version": 1,
+ "note": "Fatos, relações e metadados — sem trechos de filmes, roteiros ou quadrinhos. Confiança < 0.9 = verificar com pesquisa.",
+ "entities": [
+  {
+   "slug": "tony-stark",
+   "name": "Tony Stark",
+   "type": "character",
+   "aliases": [
+    "tony stark",
+    "tony",
+    "stark",
+    "anthony stark",
+    "anthony edward stark"
+   ],
+   "summary": "Gênio inventor, empresário e o Homem de Ferro."
+  },
+  {
+   "slug": "iron-man",
+   "name": "Homem de Ferro (Iron Man)",
+   "type": "identity",
+   "aliases": [
+    "homem de ferro",
+    "iron man",
+    "ironman"
+   ],
+   "summary": "Identidade heroica de Tony Stark."
+  },
+  {
+   "slug": "iron-man-armor",
+   "name": "Armaduras do Homem de Ferro",
+   "type": "technology",
+   "aliases": [
+    "armadura",
+    "armaduras",
+    "armaduras do homem de ferro",
+    "armadura do homem de ferro",
+    "traje do homem de ferro",
+    "marks"
+   ],
+   "summary": "Família de armaduras criadas por Tony Stark."
+  },
+  {
+   "slug": "mark-i",
+   "name": "Mark I",
+   "type": "armor",
+   "aliases": [
+    "mark i",
+    "mark 1",
+    "mark um"
+   ],
+   "summary": "Primeira armadura do MCU."
+  },
+  {
+   "slug": "mark-ii",
+   "name": "Mark II",
+   "type": "armor",
+   "aliases": [
+    "mark ii",
+    "mark 2"
+   ],
+   "summary": "Protótipo prateado de voo."
+  },
+  {
+   "slug": "mark-iii",
+   "name": "Mark III",
+   "type": "armor",
+   "aliases": [
+    "mark iii",
+    "mark 3"
+   ],
+   "summary": "Primeira armadura vermelha e dourada do MCU."
+  },
+  {
+   "slug": "mark-v",
+   "name": "Mark V",
+   "type": "armor",
+   "aliases": [
+    "mark v",
+    "mark 5",
+    "armadura maleta",
+    "armadura de maleta"
+   ],
+   "summary": "Armadura portátil em forma de maleta."
+  },
+  {
+   "slug": "mark-vii",
+   "name": "Mark VII",
+   "type": "armor",
+   "aliases": [
+    "mark vii",
+    "mark 7"
+   ],
+   "summary": "Armadura de Os Vingadores (2012)."
+  },
+  {
+   "slug": "mark-xlii",
+   "name": "Mark XLII",
+   "type": "armor",
+   "aliases": [
+    "mark xlii",
+    "mark 42"
+   ],
+   "summary": "Armadura modular de Homem de Ferro 3."
+  },
+  {
+   "slug": "mark-xliv",
+   "name": "Mark XLIV (Hulkbuster)",
+   "type": "armor",
+   "aliases": [
+    "mark xliv",
+    "mark 44",
+    "hulkbuster",
+    "caça-hulk"
+   ],
+   "summary": "Armadura pesada para conter o Hulk."
+  },
+  {
+   "slug": "mark-l",
+   "name": "Mark L",
+   "type": "armor",
+   "aliases": [
+    "mark l",
+    "mark 50"
+   ],
+   "summary": "Primeira armadura de nanotecnologia do MCU."
+  },
+  {
+   "slug": "mark-lxxxv",
+   "name": "Mark LXXXV",
+   "type": "armor",
+   "aliases": [
+    "mark lxxxv",
+    "mark 85"
+   ],
+   "summary": "Última armadura de Tony no MCU."
+  },
+  {
+   "slug": "arc-reactor",
+   "name": "Reator Arc",
+   "type": "technology",
+   "aliases": [
+    "reator arc",
+    "reator arc do tony",
+    "arc reactor",
+    "reator do peito"
+   ],
+   "summary": "Fonte de energia das armaduras e do Tony."
+  },
+  {
+   "slug": "jarvis-ai",
+   "name": "J.A.R.V.I.S. (IA de Tony Stark)",
+   "type": "ai",
+   "aliases": [
+    "j.a.r.v.i.s",
+    "j.a.r.v.i.s.",
+    "jarvis do tony",
+    "jarvis dos filmes",
+    "jarvis do mcu",
+    "jarvis do homem de ferro",
+    "ia do tony",
+    "assistente do tony"
+   ],
+   "summary": "Inteligência artificial pessoal de Tony Stark no MCU."
+  },
+  {
+   "slug": "edwin-jarvis",
+   "name": "Edwin Jarvis",
+   "type": "character",
+   "aliases": [
+    "edwin jarvis",
+    "mordomo jarvis",
+    "jarvis dos quadrinhos",
+    "jarvis mordomo"
+   ],
+   "summary": "Mordomo humano dos Stark e dos Vingadores."
+  },
+  {
+   "slug": "friday-ai",
+   "name": "F.R.I.D.A.Y.",
+   "type": "ai",
+   "aliases": [
+    "friday",
+    "f.r.i.d.a.y",
+    "sexta-feira"
+   ],
+   "summary": "IA que sucede J.A.R.V.I.S."
+  },
+  {
+   "slug": "ultron",
+   "name": "Ultron",
+   "type": "ai",
+   "aliases": [
+    "ultron"
+   ],
+   "summary": "Inteligência artificial vilã."
+  },
+  {
+   "slug": "vision",
+   "name": "Visão",
+   "type": "character",
+   "aliases": [
+    "vision",
+    "o visao",
+    "o visão",
+    "visão dos vingadores"
+   ],
+   "summary": "Androide sintetizado com a Joia da Mente."
+  },
+  {
+   "slug": "edith",
+   "name": "E.D.I.T.H.",
+   "type": "ai",
+   "aliases": [
+    "edith",
+    "e.d.i.t.h",
+    "oculos do tony",
+    "óculos do tony",
+    "oculos edith"
+   ],
+   "summary": "Sistema de IA em óculos deixado por Tony para Peter."
+  },
+  {
+   "slug": "karen-ai",
+   "name": "Karen (IA do traje)",
+   "type": "ai",
+   "aliases": [
+    "karen"
+   ],
+   "summary": "IA do traje do Homem-Aranha feito por Tony."
+  },
+  {
+   "slug": "stark-industries",
+   "name": "Indústrias Stark",
+   "type": "organization",
+   "aliases": [
+    "industrias stark",
+    "indústrias stark",
+    "stark industries"
+   ],
+   "summary": "Empresa da família Stark."
+  },
+  {
+   "slug": "avengers",
+   "name": "Vingadores",
+   "type": "organization",
+   "aliases": [
+    "vingadores",
+    "avengers"
+   ],
+   "summary": "Equipe de super-heróis."
+  },
+  {
+   "slug": "spider-man",
+   "name": "Homem-Aranha (Spider-Man)",
+   "type": "identity",
+   "aliases": [
+    "homem-aranha",
+    "homem aranha",
+    "spider-man",
+    "spiderman",
+    "spider man"
+   ],
+   "summary": "Identidade heroica — várias versões."
+  },
+  {
+   "slug": "peter-parker",
+   "name": "Peter Parker",
+   "type": "character",
+   "aliases": [
+    "peter parker",
+    "peter"
+   ],
+   "summary": "Principal Homem-Aranha."
+  },
+  {
+   "slug": "miles-morales",
+   "name": "Miles Morales",
+   "type": "character",
+   "aliases": [
+    "miles morales",
+    "miles"
+   ],
+   "summary": "Homem-Aranha do universo Ultimate e do Aranhaverso."
+  },
+  {
+   "slug": "web-shooters",
+   "name": "Lançadores de teia",
+   "type": "technology",
+   "aliases": [
+    "lançadores de teia",
+    "lancadores de teia",
+    "lançador de teia",
+    "lancador de teia",
+    "web shooters",
+    "web-shooters",
+    "web shooter",
+    "fluido de teia"
+   ],
+   "summary": "Dispositivos de pulso que disparam teia."
+  },
+  {
+   "slug": "iron-spider",
+   "name": "Iron Spider",
+   "type": "technology",
+   "aliases": [
+    "iron spider",
+    "aranha de ferro",
+    "traje iron spider"
+   ],
+   "summary": "Armadura de Homem-Aranha criada por Tony."
+  },
+  {
+   "slug": "stark-spider-suit",
+   "name": "Traje do Homem-Aranha feito por Tony (MCU)",
+   "type": "technology",
+   "aliases": [
+    "traje stark",
+    "traje do homecoming",
+    "traje que o tony deu",
+    "traje do de volta ao lar"
+   ],
+   "summary": "Traje high-tech dado a Peter no MCU."
+  },
+  {
+   "slug": "james-rhodes",
+   "name": "James Rhodes (Máquina de Combate)",
+   "type": "character",
+   "aliases": [
+    "james rhodes",
+    "rhodey",
+    "rhodes",
+    "maquina de combate",
+    "máquina de combate",
+    "war machine"
+   ],
+   "summary": "Amigo de Tony e piloto da Máquina de Combate."
+  },
+  {
+   "slug": "obadiah-stane",
+   "name": "Obadiah Stane (Monge de Ferro)",
+   "type": "character",
+   "aliases": [
+    "obadiah stane",
+    "obadiah",
+    "monge de ferro",
+    "iron monger"
+   ],
+   "summary": "Vilão ligado às Indústrias Stark."
+  },
+  {
+   "slug": "venom",
+   "name": "Venom",
+   "type": "character",
+   "aliases": [
+    "venom"
+   ],
+   "summary": "Simbionte — personagem dos quadrinhos e do SSU."
+  }
+ ],
+ "facts": [
+  {
+   "entity": "tony-stark",
+   "universe": "REAL_WORLD",
+   "fact": "Criado por Stan Lee, Larry Lieber, Don Heck e Jack Kirby; estreou em Tales of Suspense #39 (capa de março de 1963).",
+   "source": "Tales of Suspense #39",
+   "era": "1963",
+   "continuity": "REAL_WORLD",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "tony-stark",
+   "universe": "COMICS_616",
+   "fact": "Gênio inventor e dono das Indústrias Stark; ferido e capturado, constrói a primeira armadura para escapar. Na origem de 1963 o cativeiro era no Vietnã; recontagens posteriores atualizaram o lugar.",
+   "source": "Tales of Suspense #39 e recontagens",
+   "era": "1963–",
+   "continuity": "COMICS_616",
+   "confidence": 0.88,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "tony-stark",
+   "universe": "COMICS_616",
+   "fact": "É membro fundador dos Vingadores.",
+   "source": "The Avengers #1",
+   "era": "1963",
+   "continuity": "COMICS_616",
+   "confidence": 0.92,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "tony-stark",
+   "universe": "MCU",
+   "fact": "Interpretado por Robert Downey Jr.; estreou em Homem de Ferro (2008), o filme que inicia o MCU.",
+   "source": "Iron Man (2008)",
+   "era": "2008",
+   "continuity": "MCU",
+   "confidence": 0.97,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "tony-stark",
+   "universe": "MCU",
+   "fact": "Sequestrado no Afeganistão, constrói a Mark I numa caverna com a ajuda de Ho Yinsen.",
+   "source": "Iron Man (2008)",
+   "era": "2008",
+   "continuity": "MCU",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "tony-stark",
+   "universe": "MCU",
+   "fact": "No fim do primeiro filme revela publicamente que é o Homem de Ferro.",
+   "source": "Iron Man (2008)",
+   "era": "2008",
+   "continuity": "MCU",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "tony-stark",
+   "universe": "MCU",
+   "fact": "Recruta Peter Parker em Capitão América: Guerra Civil (2016) e passa a ser seu mentor.",
+   "source": "Captain America: Civil War (2016)",
+   "era": "2016",
+   "continuity": "MCU",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "tony-stark",
+   "universe": "MCU",
+   "fact": "Morre em Vingadores: Ultimato (2019) depois de usar as Joias do Infinito para derrotar Thanos.",
+   "source": "Avengers: Endgame (2019)",
+   "era": "2019",
+   "continuity": "MCU",
+   "confidence": 0.97,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "iron-man",
+   "universe": "REAL_WORLD",
+   "fact": "Personagem da Marvel Comics criado em 1963 (Stan Lee, Larry Lieber, Don Heck, Jack Kirby).",
+   "source": "Tales of Suspense #39",
+   "era": "1963",
+   "continuity": "REAL_WORLD",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "iron-man",
+   "universe": "MCU",
+   "fact": "Identidade de Tony Stark nos filmes de 2008 a 2019.",
+   "source": "Filmes do MCU",
+   "era": "2008–2019",
+   "continuity": "MCU",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "iron-man-armor",
+   "universe": "MCU",
+   "fact": "No MCU as armaduras são numeradas como 'Mark', da Mark I (2008) até a Mark LXXXV (85), usada em Vingadores: Ultimato (2019).",
+   "source": "Filmes do MCU",
+   "era": "2008–2019",
+   "continuity": "MCU",
+   "confidence": 0.9,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "iron-man-armor",
+   "universe": "MCU",
+   "fact": "A primeira armadura a aparecer no MCU é a Mark I, construída numa caverna em Homem de Ferro (2008).",
+   "source": "Iron Man (2008)",
+   "era": "2008",
+   "continuity": "MCU",
+   "confidence": 0.97,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "iron-man-armor",
+   "universe": "MCU",
+   "fact": "A partir da Mark L (50), em Vingadores: Guerra Infinita (2018), as armaduras passam a usar nanotecnologia guardada no reator do peito.",
+   "source": "Avengers: Infinity War (2018)",
+   "era": "2018",
+   "continuity": "MCU",
+   "confidence": 0.9,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "iron-man-armor",
+   "universe": "COMICS_616",
+   "fact": "A primeira armadura dos quadrinhos (1963) era cinza; logo ficou dourada, e o esquema vermelho e dourado estreou em Tales of Suspense #48 (1963).",
+   "source": "Tales of Suspense #39–#48",
+   "era": "1963",
+   "continuity": "COMICS_616",
+   "confidence": 0.82,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "iron-man-armor",
+   "universe": "COMICS_616",
+   "fact": "Os quadrinhos têm dezenas de modelos (ex.: Extremis, Bleeding Edge, Model Prime) e não usam a numeração 'Mark' dos filmes de forma sistemática.",
+   "source": "Iron Man (vários volumes)",
+   "era": "1963–",
+   "continuity": "COMICS_616",
+   "confidence": 0.8,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "mark-i",
+   "universe": "MCU",
+   "fact": "Construída numa caverna com sucata; tem lança-chamas e foi destruída na fuga.",
+   "source": "Iron Man (2008)",
+   "era": "2008",
+   "continuity": "MCU",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "mark-ii",
+   "universe": "MCU",
+   "fact": "Protótipo prateado usado nos testes de voo; em Homem de Ferro 2 é levado por James Rhodes e vira a Máquina de Combate.",
+   "source": "Iron Man (2008) / Iron Man 2 (2010)",
+   "era": "2008–2010",
+   "continuity": "MCU",
+   "confidence": 0.93,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "mark-iii",
+   "universe": "MCU",
+   "fact": "Primeira armadura vermelha e dourada; usada em Gulmira e na luta contra o Monge de Ferro.",
+   "source": "Iron Man (2008)",
+   "era": "2008",
+   "continuity": "MCU",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "mark-v",
+   "universe": "MCU",
+   "fact": "Armadura portátil em forma de maleta, usada em Mônaco.",
+   "source": "Iron Man 2 (2010)",
+   "era": "2010",
+   "continuity": "MCU",
+   "confidence": 0.92,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "mark-vii",
+   "universe": "MCU",
+   "fact": "Usada na Batalha de Nova York; é lançada até Tony enquanto ele cai da Torre Stark.",
+   "source": "The Avengers (2012)",
+   "era": "2012",
+   "continuity": "MCU",
+   "confidence": 0.9,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "mark-xlii",
+   "universe": "MCU",
+   "fact": "Armadura modular: as peças voam até o corpo de Tony por comando remoto.",
+   "source": "Iron Man 3 (2013)",
+   "era": "2013",
+   "continuity": "MCU",
+   "confidence": 0.9,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "mark-xliv",
+   "universe": "MCU",
+   "fact": "Hulkbuster: armadura pesada montada com o sistema de apoio 'Veronica' para conter o Hulk.",
+   "source": "Avengers: Age of Ultron (2015)",
+   "era": "2015",
+   "continuity": "MCU",
+   "confidence": 0.9,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "mark-l",
+   "universe": "MCU",
+   "fact": "Primeira armadura de nanotecnologia, capaz de formar armas e ferramentas sob demanda.",
+   "source": "Avengers: Infinity War (2018)",
+   "era": "2018",
+   "continuity": "MCU",
+   "confidence": 0.92,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "mark-lxxxv",
+   "universe": "MCU",
+   "fact": "Última armadura de Tony, usada na batalha final contra Thanos.",
+   "source": "Avengers: Endgame (2019)",
+   "era": "2019",
+   "continuity": "MCU",
+   "confidence": 0.93,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "arc-reactor",
+   "universe": "MCU",
+   "fact": "Mantém os estilhaços longe do coração de Tony e alimenta as armaduras; em Homem de Ferro 2 o núcleo de paládio o envenena, e ele sintetiza um novo elemento para substituí-lo.",
+   "source": "Iron Man (2008) / Iron Man 2 (2010)",
+   "era": "2008–2010",
+   "continuity": "MCU",
+   "confidence": 0.9,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "jarvis-ai",
+   "universe": "MCU",
+   "fact": "Sigla de 'Just A Rather Very Intelligent System'; IA pessoal criada por Tony, com voz de Paul Bettany.",
+   "source": "Filmes do MCU",
+   "era": "2008–2015",
+   "continuity": "MCU",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "jarvis-ai",
+   "universe": "MCU",
+   "fact": "Em Vingadores: Era de Ultron (2015), parte de J.A.R.V.I.S. é usada na criação do Visão.",
+   "source": "Avengers: Age of Ultron (2015)",
+   "era": "2015",
+   "continuity": "MCU",
+   "confidence": 0.93,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "jarvis-ai",
+   "universe": "COMICS_616",
+   "fact": "Nos quadrinhos não há uma IA chamada J.A.R.V.I.S. na origem: Jarvis é Edwin Jarvis, mordomo humano. Versões de IA aparecem depois, influenciadas pelos filmes.",
+   "source": "Quadrinhos Marvel",
+   "era": "1964–",
+   "continuity": "COMICS_616",
+   "confidence": 0.75,
+   "canonical_status": "uncertain",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "edwin-jarvis",
+   "universe": "COMICS_616",
+   "fact": "Mordomo humano de Tony Stark e dos Vingadores; estreou em Tales of Suspense #59 (1964).",
+   "source": "Tales of Suspense #59",
+   "era": "1964",
+   "continuity": "COMICS_616",
+   "confidence": 0.85,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "edwin-jarvis",
+   "universe": "MCU",
+   "fact": "Aparece como personagem humano na série Agente Carter (2015–2016), a serviço de Howard Stark.",
+   "source": "Agent Carter (2015–2016)",
+   "era": "2015–2016",
+   "continuity": "MCU",
+   "confidence": 0.9,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "friday-ai",
+   "universe": "MCU",
+   "fact": "Assistente de IA que substitui J.A.R.V.I.S. a partir de Era de Ultron (2015).",
+   "source": "Avengers: Age of Ultron (2015)",
+   "era": "2015",
+   "continuity": "MCU",
+   "confidence": 0.93,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "ultron",
+   "universe": "MCU",
+   "fact": "Criado por Tony Stark e Bruce Banner a partir de um código encontrado na Joia da Mente.",
+   "source": "Avengers: Age of Ultron (2015)",
+   "era": "2015",
+   "continuity": "MCU",
+   "confidence": 0.9,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "ultron",
+   "universe": "COMICS_616",
+   "fact": "Nos quadrinhos foi criado por Hank Pym (Homem-Formiga), não por Tony.",
+   "source": "The Avengers #54–55",
+   "era": "1968",
+   "continuity": "COMICS_616",
+   "confidence": 0.9,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "vision",
+   "universe": "MCU",
+   "fact": "Criado com a Joia da Mente, um corpo de vibranium e parte de J.A.R.V.I.S.",
+   "source": "Avengers: Age of Ultron (2015)",
+   "era": "2015",
+   "continuity": "MCU",
+   "confidence": 0.92,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "edith",
+   "universe": "MCU",
+   "fact": "Óculos com IA que Tony deixa para Peter; a sigla é 'Even Dead, I'm The Hero' e dá acesso a satélites e drones das Indústrias Stark.",
+   "source": "Spider-Man: Far From Home (2019)",
+   "era": "2019",
+   "continuity": "MCU",
+   "confidence": 0.92,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "karen-ai",
+   "universe": "MCU",
+   "fact": "IA do traje que Tony dá a Peter; Peter a apelida de Karen.",
+   "source": "Spider-Man: Homecoming (2017)",
+   "era": "2017",
+   "continuity": "MCU",
+   "confidence": 0.9,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "stark-industries",
+   "universe": "MCU",
+   "fact": "Fundada por Howard Stark e herdada por Tony, que encerra a fabricação de armas depois do primeiro filme.",
+   "source": "Iron Man (2008)",
+   "era": "2008",
+   "continuity": "MCU",
+   "confidence": 0.9,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "stark-industries",
+   "universe": "COMICS_616",
+   "fact": "Empresa da família Stark nos quadrinhos; muda de nome e controle várias vezes ao longo das décadas.",
+   "source": "Quadrinhos Marvel",
+   "era": "1963–",
+   "continuity": "COMICS_616",
+   "confidence": 0.8,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "avengers",
+   "universe": "COMICS_616",
+   "fact": "Estreiam em The Avengers #1 (1963), com o Homem de Ferro entre os membros fundadores.",
+   "source": "The Avengers #1",
+   "era": "1963",
+   "continuity": "COMICS_616",
+   "confidence": 0.92,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "avengers",
+   "universe": "MCU",
+   "fact": "A equipe se reúne pela primeira vez em Os Vingadores (2012).",
+   "source": "The Avengers (2012)",
+   "era": "2012",
+   "continuity": "MCU",
+   "confidence": 0.97,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "spider-man",
+   "universe": "REAL_WORLD",
+   "fact": "Criado por Stan Lee e Steve Ditko; estreou em Amazing Fantasy #15 (1962).",
+   "source": "Amazing Fantasy #15",
+   "era": "1962",
+   "continuity": "REAL_WORLD",
+   "confidence": 0.97,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "spider-man",
+   "universe": "REAL_WORLD",
+   "fact": "Tem várias versões em continuidades separadas: quadrinhos, MCU, filmes de Sam Raimi e de Marc Webb, Aranhaverso (animação) e jogos.",
+   "source": "Marvel / Sony",
+   "era": "1962–",
+   "continuity": "REAL_WORLD",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "peter-parker",
+   "universe": "COMICS_616",
+   "fact": "Estudante picado por uma aranha radioativa; após a morte do tio Ben, entende que poder traz responsabilidade.",
+   "source": "Amazing Fantasy #15",
+   "era": "1962",
+   "continuity": "COMICS_616",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "peter-parker",
+   "universe": "MCU",
+   "fact": "Interpretado por Tom Holland; estreia em Capitão América: Guerra Civil (2016).",
+   "source": "Captain America: Civil War (2016)",
+   "era": "2016",
+   "continuity": "MCU",
+   "confidence": 0.97,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "peter-parker",
+   "universe": "FILMS_OTHER",
+   "fact": "Tobey Maguire na trilogia de Sam Raimi (2002–2007); Andrew Garfield em O Espetacular Homem-Aranha (2012 e 2014).",
+   "source": "Spider-Man (2002) / The Amazing Spider-Man (2012)",
+   "era": "2002–2014",
+   "continuity": "FILMS_OTHER",
+   "confidence": 0.97,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "peter-parker",
+   "universe": "MCU",
+   "fact": "Em Homem-Aranha: Sem Volta para Casa (2021), as versões de Tobey Maguire e Andrew Garfield chegam ao MCU pelo multiverso.",
+   "source": "Spider-Man: No Way Home (2021)",
+   "era": "2021",
+   "continuity": "MCU",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "peter-parker",
+   "universe": "GAME",
+   "fact": "Em Marvel's Spider-Man (2018), da Insomniac Games, é um Homem-Aranha já experiente.",
+   "source": "Marvel's Spider-Man (2018)",
+   "era": "2018",
+   "continuity": "GAME",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "miles-morales",
+   "universe": "COMICS_ALT",
+   "fact": "Criado por Brian Michael Bendis e Sara Pichelli; estreou no universo Ultimate em 2011.",
+   "source": "Ultimate Fallout #4",
+   "era": "2011",
+   "continuity": "COMICS_ALT",
+   "confidence": 0.9,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "miles-morales",
+   "universe": "ANIMATED",
+   "fact": "Protagonista de Homem-Aranha no Aranhaverso (2018) e Através do Aranhaverso (2023).",
+   "source": "Spider-Man: Into/Across the Spider-Verse",
+   "era": "2018–2023",
+   "continuity": "ANIMATED",
+   "confidence": 0.97,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "miles-morales",
+   "universe": "GAME",
+   "fact": "Tem jogo próprio: Marvel's Spider-Man: Miles Morales (2020).",
+   "source": "Marvel's Spider-Man: Miles Morales (2020)",
+   "era": "2020",
+   "continuity": "GAME",
+   "confidence": 0.93,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "web-shooters",
+   "universe": "COMICS_616",
+   "fact": "Peter inventou os lançadores de teia mecânicos e o fluido de teia.",
+   "source": "Amazing Fantasy #15",
+   "era": "1962",
+   "continuity": "COMICS_616",
+   "confidence": 0.93,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "web-shooters",
+   "universe": "FILMS_OTHER",
+   "fact": "Na trilogia de Sam Raimi a teia é orgânica, produzida pelo corpo de Peter.",
+   "source": "Spider-Man (2002)",
+   "era": "2002",
+   "continuity": "FILMS_OTHER",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "web-shooters",
+   "universe": "FILMS_OTHER",
+   "fact": "Em O Espetacular Homem-Aranha (2012) os lançadores voltam a ser mecânicos.",
+   "source": "The Amazing Spider-Man (2012)",
+   "era": "2012",
+   "continuity": "FILMS_OTHER",
+   "confidence": 0.9,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "web-shooters",
+   "universe": "MCU",
+   "fact": "No MCU Peter desenvolve o fluido de teia; os lançadores do traje feito por Tony ganham vários modos de disparo.",
+   "source": "Captain America: Civil War (2016) / Spider-Man: Homecoming (2017)",
+   "era": "2016–2017",
+   "continuity": "MCU",
+   "confidence": 0.85,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "iron-spider",
+   "universe": "COMICS_616",
+   "fact": "Armadura criada por Tony para Peter durante a saga Guerra Civil.",
+   "source": "Amazing Spider-Man #529",
+   "era": "2006",
+   "continuity": "COMICS_616",
+   "confidence": 0.85,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "iron-spider",
+   "universe": "MCU",
+   "fact": "Tony dá a Peter o traje Iron Spider, de nanotecnologia e com patas mecânicas.",
+   "source": "Avengers: Infinity War (2018)",
+   "era": "2018",
+   "continuity": "MCU",
+   "confidence": 0.92,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "stark-spider-suit",
+   "universe": "MCU",
+   "fact": "Traje high-tech que Tony dá a Peter, com IA (Karen), drone de reconhecimento e vários modos de teia.",
+   "source": "Captain America: Civil War (2016) / Spider-Man: Homecoming (2017)",
+   "era": "2016–2017",
+   "continuity": "MCU",
+   "confidence": 0.88,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "james-rhodes",
+   "universe": "MCU",
+   "fact": "Leva a armadura Mark II em Homem de Ferro 2 (2010), que se torna a Máquina de Combate.",
+   "source": "Iron Man 2 (2010)",
+   "era": "2010",
+   "continuity": "MCU",
+   "confidence": 0.93,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "james-rhodes",
+   "universe": "COMICS_616",
+   "fact": "Estreia nos quadrinhos em Iron Man #118 (1979).",
+   "source": "Iron Man #118",
+   "era": "1979",
+   "continuity": "COMICS_616",
+   "confidence": 0.85,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "obadiah-stane",
+   "universe": "MCU",
+   "fact": "Vilão de Homem de Ferro (2008); usa a armadura Monge de Ferro.",
+   "source": "Iron Man (2008)",
+   "era": "2008",
+   "continuity": "MCU",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  },
+  {
+   "entity": "venom",
+   "universe": "SSU",
+   "fact": "Venom (2018), com Tom Hardy, inicia o Sony's Spider-Man Universe.",
+   "source": "Venom (2018)",
+   "era": "2018",
+   "continuity": "SSU",
+   "confidence": 0.95,
+   "canonical_status": "canon",
+   "last_verified": "2026-10 · curadoria inicial (conhecimento do modelo) — confirmar com pesquisa"
+  }
+ ],
+ "relations": [
+  {
+   "subject": "tony-stark",
+   "predicate": "created",
+   "object": "iron-man-armor",
+   "universe": "MCU",
+   "source": "Iron Man / Tales of Suspense #39",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "identity_of",
+   "object": "iron-man",
+   "universe": "MCU",
+   "source": "Marvel",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "member_of",
+   "object": "avengers",
+   "universe": "MCU",
+   "source": "The Avengers",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "worked_at",
+   "object": "stark-industries",
+   "universe": "MCU",
+   "source": "Marvel",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "created",
+   "object": "iron-spider",
+   "universe": "MCU",
+   "source": "Infinity War (2018) / Amazing Spider-Man #529",
+   "confidence": 0.9
+  },
+  {
+   "subject": "peter-parker",
+   "predicate": "used",
+   "object": "iron-spider",
+   "universe": "MCU",
+   "source": "Infinity War (2018) / Amazing Spider-Man #529",
+   "confidence": 0.9
+  },
+  {
+   "subject": "peter-parker",
+   "predicate": "identity_of",
+   "object": "spider-man",
+   "universe": "MCU",
+   "source": "Marvel",
+   "confidence": 0.9
+  },
+  {
+   "subject": "peter-parker",
+   "predicate": "used",
+   "object": "web-shooters",
+   "universe": "MCU",
+   "source": "Marvel",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "created",
+   "object": "iron-man-armor",
+   "universe": "COMICS_616",
+   "source": "Iron Man / Tales of Suspense #39",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "identity_of",
+   "object": "iron-man",
+   "universe": "COMICS_616",
+   "source": "Marvel",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "member_of",
+   "object": "avengers",
+   "universe": "COMICS_616",
+   "source": "The Avengers",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "worked_at",
+   "object": "stark-industries",
+   "universe": "COMICS_616",
+   "source": "Marvel",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "created",
+   "object": "iron-spider",
+   "universe": "COMICS_616",
+   "source": "Infinity War (2018) / Amazing Spider-Man #529",
+   "confidence": 0.9
+  },
+  {
+   "subject": "peter-parker",
+   "predicate": "used",
+   "object": "iron-spider",
+   "universe": "COMICS_616",
+   "source": "Infinity War (2018) / Amazing Spider-Man #529",
+   "confidence": 0.9
+  },
+  {
+   "subject": "peter-parker",
+   "predicate": "identity_of",
+   "object": "spider-man",
+   "universe": "COMICS_616",
+   "source": "Marvel",
+   "confidence": 0.9
+  },
+  {
+   "subject": "peter-parker",
+   "predicate": "used",
+   "object": "web-shooters",
+   "universe": "COMICS_616",
+   "source": "Marvel",
+   "confidence": 0.9
+  },
+  {
+   "subject": "peter-parker",
+   "predicate": "identity_of",
+   "object": "spider-man",
+   "universe": "FILMS_OTHER",
+   "source": "Sony / Insomniac",
+   "confidence": 0.9
+  },
+  {
+   "subject": "peter-parker",
+   "predicate": "identity_of",
+   "object": "spider-man",
+   "universe": "GAME",
+   "source": "Sony / Insomniac",
+   "confidence": 0.9
+  },
+  {
+   "subject": "peter-parker",
+   "predicate": "used",
+   "object": "web-shooters",
+   "universe": "FILMS_OTHER",
+   "source": "The Amazing Spider-Man (2012)",
+   "confidence": 0.85
+  },
+  {
+   "subject": "miles-morales",
+   "predicate": "identity_of",
+   "object": "spider-man",
+   "universe": "COMICS_ALT",
+   "source": "Marvel / Sony",
+   "confidence": 0.9
+  },
+  {
+   "subject": "miles-morales",
+   "predicate": "identity_of",
+   "object": "spider-man",
+   "universe": "ANIMATED",
+   "source": "Marvel / Sony",
+   "confidence": 0.9
+  },
+  {
+   "subject": "miles-morales",
+   "predicate": "identity_of",
+   "object": "spider-man",
+   "universe": "GAME",
+   "source": "Marvel / Sony",
+   "confidence": 0.9
+  },
+  {
+   "subject": "mark-i",
+   "predicate": "evolved_into",
+   "object": "mark-ii",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.85
+  },
+  {
+   "subject": "mark-ii",
+   "predicate": "evolved_into",
+   "object": "mark-iii",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.85
+  },
+  {
+   "subject": "mark-iii",
+   "predicate": "evolved_into",
+   "object": "mark-v",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.85
+  },
+  {
+   "subject": "mark-v",
+   "predicate": "evolved_into",
+   "object": "mark-vii",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.85
+  },
+  {
+   "subject": "mark-vii",
+   "predicate": "evolved_into",
+   "object": "mark-xlii",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.85
+  },
+  {
+   "subject": "mark-xlii",
+   "predicate": "evolved_into",
+   "object": "mark-xliv",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.85
+  },
+  {
+   "subject": "mark-xliv",
+   "predicate": "evolved_into",
+   "object": "mark-l",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.85
+  },
+  {
+   "subject": "mark-l",
+   "predicate": "evolved_into",
+   "object": "mark-lxxxv",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.85
+  },
+  {
+   "subject": "mark-i",
+   "predicate": "part_of",
+   "object": "iron-man-armor",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.9
+  },
+  {
+   "subject": "mark-ii",
+   "predicate": "part_of",
+   "object": "iron-man-armor",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.9
+  },
+  {
+   "subject": "mark-iii",
+   "predicate": "part_of",
+   "object": "iron-man-armor",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.9
+  },
+  {
+   "subject": "mark-v",
+   "predicate": "part_of",
+   "object": "iron-man-armor",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.9
+  },
+  {
+   "subject": "mark-vii",
+   "predicate": "part_of",
+   "object": "iron-man-armor",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.9
+  },
+  {
+   "subject": "mark-xlii",
+   "predicate": "part_of",
+   "object": "iron-man-armor",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.9
+  },
+  {
+   "subject": "mark-xliv",
+   "predicate": "part_of",
+   "object": "iron-man-armor",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.9
+  },
+  {
+   "subject": "mark-l",
+   "predicate": "part_of",
+   "object": "iron-man-armor",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.9
+  },
+  {
+   "subject": "mark-lxxxv",
+   "predicate": "part_of",
+   "object": "iron-man-armor",
+   "universe": "MCU",
+   "source": "Filmes do MCU",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "created",
+   "object": "jarvis-ai",
+   "universe": "MCU",
+   "source": "Iron Man (2008)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "created",
+   "object": "friday-ai",
+   "universe": "MCU",
+   "source": "Avengers: Age of Ultron (2015)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "created",
+   "object": "edith",
+   "universe": "MCU",
+   "source": "Spider-Man: Far From Home (2019)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "created",
+   "object": "karen-ai",
+   "universe": "MCU",
+   "source": "Spider-Man: Homecoming (2017)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "created",
+   "object": "stark-spider-suit",
+   "universe": "MCU",
+   "source": "Captain America: Civil War (2016)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "created",
+   "object": "arc-reactor",
+   "universe": "MCU",
+   "source": "Iron Man (2008)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "created",
+   "object": "ultron",
+   "universe": "MCU",
+   "source": "Avengers: Age of Ultron (2015)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "peter-parker",
+   "predicate": "used",
+   "object": "stark-spider-suit",
+   "universe": "MCU",
+   "source": "Spider-Man: Homecoming (2017)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "peter-parker",
+   "predicate": "used",
+   "object": "karen-ai",
+   "universe": "MCU",
+   "source": "Spider-Man: Homecoming (2017)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "peter-parker",
+   "predicate": "used",
+   "object": "edith",
+   "universe": "MCU",
+   "source": "Spider-Man: Far From Home (2019)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "tony-stark",
+   "predicate": "mentor_of",
+   "object": "peter-parker",
+   "universe": "MCU",
+   "source": "Captain America: Civil War (2016)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "jarvis-ai",
+   "predicate": "evolved_into",
+   "object": "vision",
+   "universe": "MCU",
+   "source": "Avengers: Age of Ultron (2015)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "friday-ai",
+   "predicate": "replaced",
+   "object": "jarvis-ai",
+   "universe": "MCU",
+   "source": "Avengers: Age of Ultron (2015)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "arc-reactor",
+   "predicate": "part_of",
+   "object": "iron-man-armor",
+   "universe": "MCU",
+   "source": "Iron Man (2008)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "karen-ai",
+   "predicate": "part_of",
+   "object": "stark-spider-suit",
+   "universe": "MCU",
+   "source": "Spider-Man: Homecoming (2017)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "james-rhodes",
+   "predicate": "used",
+   "object": "mark-ii",
+   "universe": "MCU",
+   "source": "Iron Man 2 (2010)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "james-rhodes",
+   "predicate": "ally_of",
+   "object": "tony-stark",
+   "universe": "MCU",
+   "source": "Iron Man (2008)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "obadiah-stane",
+   "predicate": "enemy_of",
+   "object": "tony-stark",
+   "universe": "MCU",
+   "source": "Iron Man (2008)",
+   "confidence": 0.9
+  },
+  {
+   "subject": "edwin-jarvis",
+   "predicate": "ally_of",
+   "object": "tony-stark",
+   "universe": "COMICS_616",
+   "source": "Tales of Suspense #59",
+   "confidence": 0.85
+  }
+ ]
+}

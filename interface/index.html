@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#02060c">
+  <title>JARVIS · Personal Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-core="boot" data-mode="padrao">
+
+  <!-- ================= SPRITE DE ÍCONES ================= -->
+  <svg class="sprite" aria-hidden="true">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9v11h5v-6h4v6h5V9"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/></symbol>
+    <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z"/><path d="M3 11h18"/></symbol>
+    <symbol id="i-memory" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-devices" viewBox="0 0 24 24"><rect x="2" y="4" width="14" height="10" rx="1"/><path d="M6 18h6M9 14v4"/><rect x="18" y="8" width="4" height="10" rx="1"/></symbol>
+    <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="1"/><rect x="9" y="9" width="6" height="6"/><path d="M9 2v4M15 2v4M9 18v4M15 18v4M2 9h4M2 15h4M18 9h4M18 15h4"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/><circle cx="12" cy="12" r="7"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M3 11 21 3l-8 18-2-8z"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="m20 20-4.5-4.5"/></symbol>
+    <symbol id="i-radar" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 12 18 6"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 7h4l2-3h6l2 3h4v13H3z"/><circle cx="12" cy="13" r="4"/></symbol>
+    <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3v8"/><path d="M6.3 6.8a8 8 0 1 0 11.4 0"/></symbol>
+    <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M2 12h4l3-7 4 14 3-7h6"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></symbol>
+    <symbol id="i-watch" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="3"/><path d="M9 6 10 2h4l1 4M9 18l1 4h4l1-4"/></symbol>
+    <symbol id="i-speaker" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="2"/><circle cx="12" cy="14" r="4"/><circle cx="12" cy="6.5" r="1"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></symbol>
+    <symbol id="i-monitor" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="13" rx="1"/><path d="M8 21h8M12 17v4"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="1"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-glasses" viewBox="0 0 24 24"><circle cx="6.5" cy="14" r="3.5"/><circle cx="17.5" cy="14" r="3.5"/><path d="M10 14h4M3 14l1-6M21 14l-1-6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17v.5"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8v.5"/></symbol>
+    <symbol id="i-cloud" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .5-8A6 6 0 0 0 6 9.5 4.3 4.3 0 0 0 7 18z"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></symbol>
+    <symbol id="i-capture" viewBox="0 0 24 24"><path d="M3 8V3h5M16 3h5v5M21 16v5h-5M8 21H3v-5"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12"/></symbol>
+    <symbol id="i-wave" viewBox="0 0 24 24"><path d="M3 12h2M7 8v8M10 5v14M13 9v6M16 6v12M19 10v4M21 12h0"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r=".8"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/></symbol>
+    <symbol id="i-target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></symbol>
+    <symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 2 21 7v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></symbol>
+    <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/></symbol>
+    <symbol id="i-folder-open" viewBox="0 0 24 24"><path d="M3 19V5h6l2 2h8v3"/><path d="M3 19l3-8h16l-3 8z"/></symbol>
+    <symbol id="i-search-plus" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/><circle cx="11" cy="11" r="2.5"/></symbol>
+    <symbol id="i-maximize" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 8.2 8 9 4.6-.8 8-4.5 8-9V6z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M12 2c3.5 2.5 5 6 4.5 11l-2.5 3h-4l-2.5-3C7 8 8.5 4.5 12 2z"/><circle cx="12" cy="9" r="1.8"/><path d="M8 14l-3 3 1 3 3-2M16 14l3 3-1 3-3-2M11 19l1 3 1-3"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 2v6M12 16v6M2 12h6M16 12h6M5 5l4 4M15 15l4 4M5 19l4-4M15 9l4-4"/></symbol>
+    <symbol id="i-chip" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 9h6v6H9zM9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></symbol>
+    <symbol id="i-pin-alert" viewBox="0 0 24 24"><path d="M12 22s-7-6.2-7-12a7 7 0 0 1 14 0c0 5.8-7 12-7 12z"/><path d="M12 6v4M12 13v.5"/></symbol>
+    <symbol id="i-robot" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="11" rx="2"/><path d="M12 4v4M9 13h.01M15 13h.01M9 16h6M2 12v3M22 12v3"/><circle cx="12" cy="3.5" r="1"/></symbol>
+    <symbol id="i-cloud-dl" viewBox="0 0 24 24"><path d="M7 18h10a4 4 0 0 0 .5-8A6 6 0 0 0 6 9.5 4.3 4.3 0 0 0 7 18z"/><path d="M12 10v6M9.5 13.5 12 16l2.5-2.5"/></symbol>
+  </svg>
+
+  <!-- ================= CAMADAS DE FUNDO ================= -->
+  <canvas id="bgCity" class="bg-city" aria-hidden="true"></canvas>
+  <canvas id="bgParticles" class="bg-particles" aria-hidden="true"></canvas>
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+  <div class="bg-scan" aria-hidden="true"></div>
+  <div class="bg-vignette" aria-hidden="true"></div>
+
+  <!-- ================= BOOT ================= -->
+  <div class="boot" id="boot" role="status" aria-live="polite">
+    <div class="boot-inner">
+      <div class="boot-ring"><span></span><span></span><span></span></div>
+      <div class="boot-title">J.A.R.V.I.S</div>
+      <div class="boot-sub">PERSONAL INTELLIGENCE · INICIALIZANDO</div>
+      <div class="boot-log" id="bootLog"></div>
+      <div class="boot-bar"><i id="bootBar"></i></div>
+      <button class="boot-skip" id="bootSkip" type="button">PULAR ▸</button>
+    </div>
+  </div>
+
+  <!-- ================= APLICAÇÃO ================= -->
+  <div class="app" id="app">
+
+    <!-- HEADER -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><span></span><span></span><i></i></div>
+        <div class="brand-text">
+          <strong>JARVIS</strong>
+          <small>PERSONAL INTELLIGENCE</small>
+        </div>
+        <span class="version" id="sysVersion">v0.1</span>
+      </div>
+
+      <div class="clock" aria-label="Relógio">
+        <svg class="clock-frame" viewBox="0 0 380 80" preserveAspectRatio="none" aria-hidden="true">
+          <path class="cf-fill" d="M34 0 L60 76 H320 L346 0 Z"/>
+          <path class="cf-edge" d="M0 1 H34 L60 76 H320 L346 1 H380"/>
+        </svg>
+        <div class="clock-time"><span id="clockHM">--:--</span><span class="clock-sec" id="clockSec">:--</span></div>
+        <div class="clock-date" id="clockDate">--</div>
+      </div>
+
+      <div class="status-cluster">
+        <div class="core-pill" id="coreIndicator" title="Estado do núcleo"><i class="dot"></i><span>CORE</span><b id="coreIndicatorText">BOOT</b></div>
+        <button class="icon-btn" type="button" id="topMic" aria-label="Microfone"><svg><use href="#i-mic"/></svg></button>
+        <button class="icon-btn" type="button" id="topWave" aria-label="Sons da interface"><svg><use href="#i-wave"/></svg></button>
+        <span class="icon-btn net" id="netIndicator" title="Conectado"><svg><use href="#i-wifi"/></svg></span>
+        <button class="icon-btn" id="btnNotif" type="button" aria-label="Notificações">
+          <svg><use href="#i-bell"/></svg><span class="badge" id="notifBadge" hidden>0</span>
+        </button>
+        <button class="icon-btn gear" type="button" data-nav="configuracoes" aria-label="Configurações"><svg><use href="#i-gear"/></svg></button>
+      </div>
+    </header>
+
+    <!-- NAVEGAÇÃO -->
+    <nav class="rail" id="rail" aria-label="Navegação principal">
+      <button class="nav-item" type="button" data-nav="inicio"><svg><use href="#i-home"/></svg><span>INÍCIO</span></button>
+      <button class="nav-item" type="button" data-nav="conversa"><svg><use href="#i-chat"/></svg><span>CONVERSA</span></button>
+      <button class="nav-item" type="button" data-nav="projetos"><svg><use href="#i-folder"/></svg><span>PROJETOS</span></button>
+      <button class="nav-item" type="button" data-nav="memoria"><svg><use href="#i-memory"/></svg><span>MEMÓRIA</span></button>
+      <button class="nav-item" type="button" data-nav="visao"><svg><use href="#i-eye"/></svg><span>VISÃO</span></button>
+      <button class="nav-item" type="button" data-nav="dispositivos"><svg><use href="#i-monitor"/></svg><span>DISPOSITIVOS</span></button>
+      <button class="nav-item" type="button" data-nav="sistema"><svg><use href="#i-gear"/></svg><span>SISTEMA</span></button>
+      <button class="nav-item" type="button" data-nav="configuracoes"><svg><use href="#i-gear"/></svg><span>CONFIGURAÇÕES</span></button>
+      <div class="rail-indicator" id="railIndicator" aria-hidden="true"></div>
+    </nav>
+
+    <!-- PALCO -->
+    <main class="stage" id="stage">
+
+      <!-- ============ INÍCIO ============ -->
+      <section class="page" data-page="inicio" aria-label="Início">
+        <div class="home">
+
+          <!-- Localização + globo -->
+          <div class="panel loc-panel">
+            <div class="panel-head"><span class="ph-title">LOCALIZAÇÃO</span>
+              <span class="ph-tools"><span class="loc-src mono" id="locSource">—</span><button type="button" id="locRefresh" aria-label="Atualizar localização"><svg><use href="#i-refresh"/></svg></button></span>
+            </div>
+            <div class="loc-city" id="locCity">Ivinhema, MS</div>
+            <div class="loc-coords mono" id="locCoords">-22.3013, -53.8287</div>
+            <div class="globe-wrap"><canvas id="globe" aria-hidden="true"></canvas></div>
+            <div class="weather">
+              <svg class="wx-ico" id="wxIcon" viewBox="0 0 48 48" aria-hidden="true"></svg>
+              <div><strong><span id="weatherTemp">--</span>°C</strong><span id="weatherDesc">Carregando clima…</span><span class="wx-meta mono" id="weatherMeta"></span></div>
+            </div>
+          </div>
+
+          <!-- Núcleo -->
+          <div class="core-wrap">
+            <div class="core" id="core" role="img" aria-label="Núcleo JARVIS">
+              <svg class="core-svg" viewBox="0 0 400 400" aria-hidden="true">
+                <defs>
+                  <radialGradient id="coreDisc" cx="50%" cy="50%" r="50%">
+                    <stop offset="0" stop-color="#06182c"/><stop offset=".75" stop-color="#030c18"/><stop offset="1" stop-color="#0a2a4a"/>
+                  </radialGradient>
+                </defs>
+                <circle class="c-thin o35" cx="200" cy="200" r="197"/>
+                <g class="rot rot-a"><circle class="c-ticks" cx="200" cy="200" r="189"/></g>
+                <g class="rot rot-b">
+                  <circle class="c-seg" cx="200" cy="200" r="174" pathLength="1000"/>
+                  <circle class="c-orange" cx="200" cy="200" r="184" pathLength="1000"/>
+                </g>
+                <circle class="c-thin o50" cx="200" cy="200" r="162"/>
+                <g class="rot rot-c">
+                  <circle class="c-seg2" cx="200" cy="200" r="153" pathLength="1000"/>
+                  <circle class="c-sat" cx="200" cy="47" r="3.2"/>
+                  <circle class="c-sat dim" cx="200" cy="353" r="2.4"/>
+                </g>
+                <circle class="c-thin o25 dash" cx="200" cy="200" r="141"/>
+                <g class="rot rot-d"><circle class="c-seg3" cx="200" cy="200" r="132" pathLength="1000"/></g>
+                <g class="rot rot-e"><circle class="c-think" cx="200" cy="200" r="122" pathLength="1000"/></g>
+                <circle class="c-thin o35" cx="200" cy="200" r="116"/>
+                <circle class="c-disc" cx="200" cy="200" r="106"/>
+                <g class="rot rot-f"><circle class="c-inner" cx="200" cy="200" r="96" pathLength="1000"/></g>
+              </svg>
+              <div class="core-heart">
+                <span class="core-label">JARVIS</span>
+                <span class="core-sub" id="coreSub">BOOT</span>
+              </div>
+              <div class="core-ripple"></div>
+            </div>
+          </div>
+
+          <!-- Coluna direita -->
+          <div class="home-right">
+            <div class="panel notif-panel">
+              <div class="panel-head"><span class="ph-title">NOTIFICAÇÕES</span><button class="ph-link" type="button" id="homeNotifAll">Ver todas</button></div>
+              <ul class="mini-notifs" id="homeNotifs"></ul>
+            </div>
+            <div class="panel map-panel">
+              <div class="panel-head"><span class="ph-title">MAPA GLOBAL</span><span class="mono dim" id="mapLabel">REDE</span></div>
+              <div class="map-body">
+                <div class="map-wrap"><canvas id="worldMap" aria-hidden="true"></canvas></div>
+                <div class="map-tools" id="mapTools">
+                  <button type="button" class="on" data-layer="net" aria-label="Rede"><svg><use href="#i-globe"/></svg></button>
+                  <button type="button" data-layer="nodes" aria-label="Alvos"><svg><use href="#i-target"/></svg></button>
+                  <button type="button" data-layer="radar" aria-label="Varredura"><svg><use href="#i-radar"/></svg></button>
+                  <button type="button" data-layer="data" aria-label="Dados"><svg><use href="#i-cube"/></svg></button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Saudação, voz e ações -->
+          <div class="home-mid">
+            <h1 class="greeting" id="greeting">Good evening, José Marcelo.</h1>
+            <form class="ask" id="homeCommand" autocomplete="off">
+              <input type="text" id="homeInput" placeholder="Como posso ajudar?" aria-label="Comando para o JARVIS">
+            </form>
+            <canvas class="wave" id="wave" aria-hidden="true"></canvas>
+            <div class="actions">
+              <button class="act" type="button" data-action="analyze"><svg><use href="#i-scan"/></svg><span>Analisar ambiente</span></button>
+              <button class="act" type="button" data-nav="projetos"><svg><use href="#i-folder-open"/></svg><span>Abrir projeto</span></button>
+              <button class="act" type="button" data-action="search"><svg><use href="#i-search-plus"/></svg><span>Pesquisar na web</span></button>
+              <button class="act" type="button" data-nav="memoria"><svg><use href="#i-memory"/></svg><span>Mostrar memória</span></button>
+              <button class="act" type="button" data-nav="dispositivos"><svg><use href="#i-monitor"/></svg><span>Ver dispositivos</span></button>
+              <button class="act" type="button" data-action="more"><svg><use href="#i-dots"/></svg><span>Mais opções</span></button>
+            </div>
+          </div>
+
+          <!-- Painéis inferiores -->
+          <div class="home-bottom">
+            <div class="panel">
+              <div class="panel-head"><span class="ph-title">PROJETOS</span><button class="ph-link" type="button" data-nav="projetos">Ver todos</button></div>
+              <ul class="mini-list" id="homeProjects"></ul>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><span class="ph-title">DISPOSITIVOS CONECTADOS</span><button class="ph-link" type="button" data-nav="dispositivos">Ver todos</button></div>
+              <ul class="mini-list" id="homeDevices"></ul>
+            </div>
+            <div class="panel cam-panel">
+              <div class="panel-head"><span class="ph-title">CÂMERA</span>
+                <span class="ph-tools">
+                  <button type="button" id="camSnap" aria-label="Capturar"><svg><use href="#i-capture"/></svg></button>
+                  <button type="button" data-nav="visao" aria-label="Abrir visão"><svg><use href="#i-maximize"/></svg></button>
+                </span>
+              </div>
+              <div class="cam-feed" id="camFeed">
+                <img src="assets/camera-lab.jpg" alt="Imagem ilustrativa do laboratório (câmera não conectada)" id="camImg">
+                <span class="cam-rec mono" id="camClock">SEM SINAL</span>
+                <div class="cam-offline"><strong>SINAL ÓPTICO AUSENTE</strong><span>câmera não conectada · imagem ilustrativa</span></div>
+                <span class="cam-label off"><i></i>Laboratório</span>
+                <div class="cam-flash" id="camFlash"></div>
+              </div>
+            </div>
+            <div class="panel">
+              <div class="panel-head"><span class="ph-title">FEED EM TEMPO REAL</span><span class="tag ok sm">AO VIVO</span></div>
+              <ul class="mini-list" id="homeFeed"></ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ CONVERSA ============ -->
+      <section class="page" data-page="conversa" aria-label="Conversa">
+        <header class="page-head">
+          <div>
+            <span class="eyebrow">CANAL 01 · NÚCLEO JARVIS</span>
+            <h2>Conversa</h2>
+          </div>
+          <div class="head-actions">
+            <span class="tag" id="chatModel">CONECTANDO…</span>
+            <button class="btn ghost" type="button" id="chatClear"><svg><use href="#i-trash"/></svg>Limpar</button>
+          </div>
+        </header>
+        <div class="chat">
+          <aside class="chat-side">
+            <div class="mini-core" aria-hidden="true"><span></span><span></span><span></span><i></i></div>
+            <div class="chat-state" id="chatState">AGUARDANDO</div>
+            <div class="mic-state" id="micState" hidden>MICROFONE LIGADO</div>
+            <dl class="kv">
+              <div><dt>MENSAGENS</dt><dd id="chatCount">0</dd></div>
+              <div><dt>RESP. MÉDIA</dt><dd id="chatAvg">—</dd></div>
+              <div><dt>MODELO</dt><dd id="chatEngine">—</dd></div>
+              <div><dt>CONTEXTO</dt><dd id="chatCtx">0 tok</dd></div>
+              <div><dt>LATÊNCIA</dt><dd id="chatLat">—</dd></div>
+            </dl>
+          </aside>
+          <div class="chat-main">
+            <div class="chat-log" id="chatLog" aria-live="polite"></div>
+            <div class="chat-thinking" id="chatThinking" hidden>
+              <div class="think-bars"><i></i><i></i><i></i><i></i><i></i></div>
+              <span>JARVIS PROCESSANDO</span>
+              <div class="think-progress"><i></i></div>
+            </div>
+            <div class="chat-suggest" id="chatSuggest">
+              <button class="chip sm" type="button" data-say="Olá JARVIS.">Olá JARVIS.</button>
+              <button class="chip sm" type="button" data-say="JARVIS, quem é Tony Stark?">Quem é Tony Stark?</button>
+              <button class="chip sm" type="button" data-say="Meu projeto atual é o JARVIS.">Meu projeto atual é o JARVIS.</button>
+              <button class="chip sm" type="button" data-say="Qual é meu projeto atual?">Qual é meu projeto atual?</button>
+              <button class="chip sm" type="button" data-say="Quanto é 500 * 20?">Quanto é 500 * 20?</button>
+              <button class="chip sm" type="button" data-say="Como está o meu PC?">Como está o meu PC?</button>
+            </div>
+            <form class="chat-input" id="chatForm" autocomplete="off">
+              <span class="prompt-mark">USER&gt;</span>
+              <textarea id="chatInput" rows="1" placeholder="Escreva para o JARVIS… (Enter envia · Shift+Enter quebra linha)" aria-label="Mensagem"></textarea>
+              <button class="send-btn mic-btn" type="button" id="chatMic" aria-label="Falar com o JARVIS"><svg><use href="#i-mic"/></svg></button>
+              <button class="send-btn" type="submit"><svg><use href="#i-send"/></svg><span>ENVIAR</span></button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ PROJETOS ============ -->
+      <section class="page" data-page="projetos" aria-label="Projetos">
+        <header class="page-head">
+          <div>
+            <span class="eyebrow">WORKSHOP · <span id="projCount">0</span> REGISTROS</span>
+            <h2>Projetos</h2>
+          </div>
+          <div class="head-actions">
+            <div class="segmented" id="projFilter">
+              <button type="button" class="on" data-filter="todos">Todos</button>
+              <button type="button" data-filter="Em desenvolvimento">Desenv.</button>
+              <button type="button" data-filter="Protótipo">Protótipo</button>
+              <button type="button" data-filter="Planejamento">Planej.</button>
+              <button type="button" data-filter="Pesquisa">Pesquisa</button>
+            </div>
+            <button class="btn" type="button" id="projNew"><svg><use href="#i-plus"/></svg>Novo projeto</button>
+          </div>
+        </header>
+        <div class="proj-grid" id="projGrid"></div>
+      </section>
+
+      <!-- ============ MEMÓRIA ============ -->
+      <section class="page" data-page="memoria" aria-label="Memória">
+        <header class="page-head">
+          <div>
+            <span class="eyebrow">MATRIZ ASSOCIATIVA · <span id="memTotal">0</span> NÓS</span>
+            <h2>Memória</h2>
+          </div>
+          <div class="head-actions">
+            <label class="search">
+              <svg><use href="#i-search"/></svg>
+              <input type="search" id="memSearch" placeholder="Buscar na memória…" aria-label="Buscar na memória">
+            </label>
+            <button class="btn" type="button" id="memAdd"><svg><use href="#i-plus"/></svg>Nova memória</button>
+          </div>
+        </header>
+        <div class="mem-layout">
+          <div class="mem-view frame">
+            <canvas id="memCanvas"></canvas>
+            <div class="mem-tip" id="memTip" hidden></div>
+            <span class="corner-label tl">NEURAL MAP</span>
+            <span class="corner-label br mono" id="memCoords">x 0 · y 0</span>
+          </div>
+          <aside class="mem-side">
+            <div class="mem-cats" id="memCats"></div>
+            <div class="mem-detail" id="memDetail">
+              <span class="eyebrow">NÓ SELECIONADO</span>
+              <p class="dim">Clique em um nó do mapa para inspecionar.</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ============ VISÃO ============ -->
+      <section class="page" data-page="visao" aria-label="Visão">
+        <header class="page-head">
+          <div>
+            <span class="eyebrow">MÓDULO ÓPTICO · FASE 6</span>
+            <h2>Visão</h2>
+          </div>
+          <div class="head-actions">
+            <div class="segmented" id="visMode">
+              <button type="button" class="on" data-mode="detect">Detecção</button>
+              <button type="button" data-mode="track">Rastreio</button>
+              <button type="button" data-mode="depth">Profundidade</button>
+            </div>
+          </div>
+        </header>
+        <div class="vis-layout">
+          <div class="vis-view" id="visView">
+            <canvas id="visCanvas"></canvas>
+            <div class="vis-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <div class="vis-scan" aria-hidden="true"></div>
+            <div class="vis-reticle" id="visReticle" aria-hidden="true"></div>
+            <div class="vis-offline" id="visOffline">
+              <svg><use href="#i-camera"/></svg>
+              <strong>SINAL ÓPTICO AUSENTE</strong>
+              <span>Nenhuma câmera conectada ao JARVIS. A simulação abaixo usa dados fictícios.</span>
+            </div>
+            <div class="vis-hud">
+              <span class="rec" id="visRec"><i></i>SEM SINAL</span>
+              <span class="mono" id="visFps">0 FPS</span>
+              <span class="mono">1280×720</span>
+              <span class="mono" id="visModeLabel">DETECT</span>
+            </div>
+            <div class="vis-flash" id="visFlash"></div>
+          </div>
+          <aside class="vis-side">
+            <div class="vis-backend mono" id="visBackend">Câmera: —</div>
+            <button class="btn ghost" type="button" id="visCamera"><svg><use href="#i-camera"/></svg>Conectar câmera real</button>
+            <div class="vis-controls">
+              <button class="btn" type="button" id="visToggle"><svg><use href="#i-play"/></svg><span>Iniciar simulação</span></button>
+              <button class="btn ghost" type="button" id="visCapture"><svg><use href="#i-capture"/></svg>Capturar</button>
+            </div>
+            <label class="range">
+              <span>Limiar de confiança <b id="visThreshVal">0.60</b></span>
+              <input type="range" id="visThresh" min="0.3" max="0.95" step="0.05" value="0.6">
+            </label>
+            <div class="vis-list">
+              <span class="eyebrow">DETECÇÕES (SIMULADAS)</span>
+              <ul id="visDetections"><li class="dim">Nenhum objeto.</li></ul>
+            </div>
+            <div class="vis-caps">
+              <span class="eyebrow">CAPTURAS</span>
+              <div id="visCaps" class="caps-grid"><span class="dim">Sem capturas.</span></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ============ DISPOSITIVOS ============ -->
+      <section class="page" data-page="dispositivos" aria-label="Dispositivos">
+        <header class="page-head">
+          <div>
+            <span class="eyebrow">MALHA DE DISPOSITIVOS · <span id="devSummary">0/0</span> ONLINE</span>
+            <h2>Dispositivos</h2>
+          </div>
+          <div class="head-actions">
+            <button class="btn" type="button" id="devScan"><svg><use href="#i-radar"/></svg><span>Escanear rede</span></button>
+          </div>
+        </header>
+        <div class="dev-layout">
+          <div class="dev-list" id="devList"></div>
+          <aside class="radar-wrap">
+            <div class="radar" id="radar">
+              <div class="radar-sweep"></div>
+              <div class="radar-blips" id="radarBlips"></div>
+            </div>
+            <div class="radar-caption mono" id="radarCaption">VARREDURA PASSIVA</div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ============ SISTEMA ============ -->
+      <section class="page" data-page="sistema" aria-label="Sistema">
+        <header class="page-head">
+          <div>
+            <span class="eyebrow">TELEMETRIA · DADOS REAIS DO COMPUTADOR</span>
+            <h2>Sistema</h2>
+          </div>
+          <div class="head-actions">
+            <button class="btn ghost" type="button" id="sysDiag"><svg><use href="#i-pulse"/></svg>Diagnóstico</button>
+            <button class="btn danger" type="button" id="sysReboot" title="Relê o .env e reconecta o modelo de IA"><svg><use href="#i-power"/></svg>Reiniciar núcleo</button>
+          </div>
+        </header>
+        <div class="sys-gauges" id="sysGauges">
+          <div class="gauge" data-metric="cpu">
+            <svg viewBox="0 0 120 120"><circle class="g-track" cx="60" cy="60" r="50"/><circle class="g-fill" cx="60" cy="60" r="50"/></svg>
+            <div class="g-val"><b>0</b><small>%</small></div>
+            <span class="g-name">CPU</span>
+            <canvas class="spark"></canvas>
+          </div>
+          <div class="gauge" data-metric="ram">
+            <svg viewBox="0 0 120 120"><circle class="g-track" cx="60" cy="60" r="50"/><circle class="g-fill" cx="60" cy="60" r="50"/></svg>
+            <div class="g-val"><b>0</b><small>%</small></div>
+            <span class="g-name">RAM</span>
+            <canvas class="spark"></canvas>
+          </div>
+          <div class="gauge" data-metric="net">
+            <svg viewBox="0 0 120 120"><circle class="g-track" cx="60" cy="60" r="50"/><circle class="g-fill" cx="60" cy="60" r="50"/></svg>
+            <div class="g-val"><b>0</b><small>Mb/s</small></div>
+            <span class="g-name">NETWORK</span>
+            <canvas class="spark"></canvas>
+          </div>
+          <div class="gauge" data-metric="core">
+            <svg viewBox="0 0 120 120"><circle class="g-track" cx="60" cy="60" r="50"/><circle class="g-fill" cx="60" cy="60" r="50"/></svg>
+            <div class="g-val"><b>0</b><small>%</small></div>
+            <span class="g-name">CORE (JARVIS)</span>
+            <canvas class="spark"></canvas>
+          </div>
+        </div>
+        <div class="sys-row">
+          <div class="sys-uptime frame">
+            <span class="eyebrow">UPTIME</span>
+            <div class="uptime" id="uptime">--:--:--</div>
+            <dl class="kv">
+              <div><dt>VERSÃO</dt><dd id="sysBuild">—</dd></div>
+              <div><dt>SISTEMA</dt><dd id="sysOs">—</dd></div>
+              <div><dt>TEMP. GPU</dt><dd id="sysTemp">—</dd></div>
+              <div><dt>THREADS</dt><dd id="sysThreads">—</dd></div>
+            </dl>
+          </div>
+          <div class="sys-proc frame">
+            <span class="eyebrow">MÓDULOS DO NÚCLEO</span>
+            <table class="proc">
+              <thead><tr><th>MÓDULO</th><th>ESTADO</th></tr></thead>
+              <tbody id="procBody"></tbody>
+            </table>
+          </div>
+          <div class="sys-log frame">
+            <span class="eyebrow">EVENTOS DO NÚCLEO</span>
+            <div class="log" id="sysLog"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============ CONFIGURAÇÕES ============ -->
+      <section class="page" data-page="configuracoes" aria-label="Configurações">
+        <header class="page-head">
+          <div>
+            <span class="eyebrow">PARÂMETROS DA INTERFACE</span>
+            <h2>Configurações</h2>
+          </div>
+          <div class="head-actions">
+            <button class="btn ghost" type="button" id="setReset"><svg><use href="#i-refresh"/></svg>Restaurar padrão</button>
+          </div>
+        </header>
+        <div class="settings">
+          <div class="set-group">
+            <h3>Movimento</h3>
+            <label class="toggle"><input type="checkbox" data-setting="animations"><span class="sw"></span><span class="t-txt"><b>Animações</b><small>Rotação do núcleo, transições e microanimações.</small></span></label>
+            <label class="toggle"><input type="checkbox" data-setting="boot"><span class="sw"></span><span class="t-txt"><b>Sequência de boot</b><small>Exibir inicialização ao abrir.</small></span></label>
+          </div>
+          <div class="set-group">
+            <h3>Efeitos visuais</h3>
+            <label class="toggle"><input type="checkbox" data-setting="city"><span class="sw"></span><span class="t-txt"><b>Cenário do laboratório</b><small>Vista noturna da cidade ao fundo.</small></span></label>
+            <label class="toggle"><input type="checkbox" data-setting="particles"><span class="sw"></span><span class="t-txt"><b>Partículas</b><small>Campo de partículas no fundo.</small></span></label>
+            <label class="toggle"><input type="checkbox" data-setting="scanlines"><span class="sw"></span><span class="t-txt"><b>Scanlines</b><small>Linhas de varredura holográfica.</small></span></label>
+            <label class="toggle"><input type="checkbox" data-setting="grid"><span class="sw"></span><span class="t-txt"><b>Grade</b><small>Malha de referência no fundo.</small></span></label>
+          </div>
+          <div class="set-group">
+            <h3>Som</h3>
+            <label class="toggle"><input type="checkbox" data-setting="sound"><span class="sw"></span><span class="t-txt"><b>Sons da interface</b><small>Bipes sintetizados (sem arquivos).</small></span></label>
+            <label class="range"><span>Volume <b id="volVal">40%</b></span><input type="range" min="0" max="1" step="0.05" data-setting="volume"></label>
+            <button class="btn ghost sm" type="button" id="soundTest">Testar som</button>
+          </div>
+          <div class="set-group">
+            <h3>Intensidade</h3>
+            <label class="range"><span>Brilho / glow <b id="intVal">100%</b></span><input type="range" min="0.2" max="1.6" step="0.05" data-setting="intensity"></label>
+            <label class="range"><span>Densidade de partículas <b id="denVal">100%</b></span><input type="range" min="0.2" max="2" step="0.1" data-setting="density"></label>
+          </div>
+          <div class="set-group wide">
+            <h3>Modo de interface</h3>
+            <div class="modes" id="modes">
+              <button type="button" data-mode="padrao"><i style="--h:205"></i><b>PADRÃO</b><small>Azul elétrico</small></button>
+              <button type="button" data-mode="arc"><i style="--h:172"></i><b>ARC</b><small>Reator, ciano-turquesa</small></button>
+              <button type="button" data-mode="stealth"><i style="--h:215;--s:30%"></i><b>STEALTH</b><small>Discreto, baixo brilho</small></button>
+              <button type="button" data-mode="alerta"><i style="--h:356"></i><b>ALERTA</b><small>Protocolo de emergência</small></button>
+            </div>
+          </div>
+          <div class="set-group">
+            <h3>Voz</h3>
+            <label class="field"><span>Falar as respostas</span>
+              <select data-setting="voiceReply"><option value="voice">Quando eu falar por voz</option><option value="always">Sempre</option><option value="never">Nunca</option></select></label>
+            <label class="range"><span>Velocidade da fala <b id="vrVal">0%</b></span><input type="range" min="-30" max="40" step="5" data-setting="voiceRate"></label>
+            <label class="field"><span>Voz</span>
+              <select data-setting="ttsEngine"><option value="auto">Neural do servidor quando disponível (edge-tts)</option><option value="browser">Voz do navegador</option></select></label>
+            <label class="toggle"><input type="checkbox" data-setting="continuous"><span class="sw"></span><span class="t-txt"><b>Conversa contínua</b><small>No modo “só quando eu clicar”: depois de responder, escuta por 8 s para você continuar.</small></span></label>
+            <label class="toggle"><input type="checkbox" data-setting="bargeIn"><span class="sw"></span><span class="t-txt"><b>Interromper falando</b><small>Fale durante a resposta para cortar. “Pare” só para.</small></span></label>
+            <label class="field"><span>Microfone</span>
+              <select data-setting="micMode"><option value="always">Sempre ouvindo — clique no microfone para mutar/desmutar</option><option value="wake">Sempre ouvindo, mas só reage a “JARVIS…”</option><option value="click">Só quando eu clicar (uma frase por clique)</option></select></label>
+            <p class="dim" style="margin:0;font-size:13.5px">O reconhecimento de voz é do navegador (Chrome/Edge): o áudio vai para o serviço de fala dele. Esc interrompe a qualquer momento.</p>
+          </div>
+          <div class="set-group">
+            <h3>Inteligência</h3>
+            <label class="field"><span>Modelo Claude (versão web, usa o seu plano)</span>
+              <select data-setting="claudeTier"><option value="quick">Rápido — respostas em segundos</option><option value="default">Equilibrado — pensa antes, mais lento</option><option value="complex">Avançado — o mais capaz, o mais lento</option></select></label>
+            <p class="dim" style="margin:0;font-size:13.5px">Na versão local quem define o modelo é o arquivo .env.</p>
+          </div>
+          <div class="set-group">
+            <h3>Identidade</h3>
+            <label class="field"><span>Nome do usuário</span><input type="text" data-setting="userName" maxlength="40"></label>
+            <label class="field"><span>Localização</span>
+              <select data-setting="locMode"><option value="auto">Automática (GPS → IP)</option><option value="manual">Manual</option></select></label>
+            <label class="field"><span>Cidade (modo manual)</span><input type="text" data-setting="location" maxlength="60" placeholder="Ex.: Ivinhema, MS"></label>
+            <div class="loc-status"><span class="dim" id="locStatus">—</span><button class="btn ghost sm" type="button" id="locDetect"><svg><use href="#i-pin"/></svg>Atualizar agora</button></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+  </div>
+
+  <!-- ================= NOTIFICAÇÕES ================= -->
+  <aside class="notif-drawer" id="notifDrawer" aria-label="Notificações" aria-hidden="true">
+    <header>
+      <span class="eyebrow">CENTRAL</span>
+      <h3>Notificações</h3>
+      <div class="nd-actions">
+        <button class="btn ghost sm" type="button" id="notifClear">Limpar tudo</button>
+        <button class="icon-btn" type="button" id="notifClose" aria-label="Fechar"><svg><use href="#i-x"/></svg></button>
+      </div>
+    </header>
+    <ul class="notif-list" id="notifList"></ul>
+  </aside>
+  <div class="scrim" id="scrim"></div>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+
+  <!-- ================= MODAL ================= -->
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header>
+        <span class="eyebrow" id="modalEyebrow">DETALHES</span>
+        <h3 id="modalTitle">—</h3>
+        <button class="icon-btn" type="button" id="modalClose" aria-label="Fechar"><svg><use href="#i-x"/></svg></button>
+      </header>
+      <div class="modal-body" id="modalBody"></div>
+      <footer class="modal-foot" id="modalFoot"></footer>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
