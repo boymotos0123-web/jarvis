@@ -122,6 +122,7 @@ export class Drone {
       propWash: true,
       groundEffect: true,
       battery: true, // false = bateria infinita
+      cine: false, // modo Cine: velocidades baixas e movimentos suaves (só no modo GPS)
       gyroNoise: true,
     };
     this.listeners = {};
@@ -201,6 +202,7 @@ export class Drone {
     this.vzI = 0;
     this.lastSat = false;
     this.wash = v3();
+    this.auto = null;
   }
   newPid() { return { i: 0, prevMeas: 0, dF: 0, prevSp: 0, ffF: 0 }; }
 
@@ -405,7 +407,8 @@ export class Drone {
       const maxR = 9;
       const l = Math.hypot(wsp.x, wsp.z);
       if (l > maxR) wsp = v3((wsp.x * maxR) / l, 0, (wsp.z * maxR) / l);
-      const yawW = -rateDps(inp.yaw, cfg.rates.yaw) * D2R * (mode === 'pos' ? 0.5 : 1);
+      const yawW = mode === 'pos' && this.auto ? this.auto.yawRate
+        : -rateDps(inp.yaw, cfg.rates.yaw) * D2R * (mode === 'pos' ? (cfg.cine ? 0.22 : 0.5) : 1);
       wsp = add(wsp, scl(upC, yawW));
       sp = { r: -wsp.z, p: -wsp.x, y: -wsp.y };
     }
@@ -429,9 +432,14 @@ export class Drone {
     const s = this.s, p = this.p;
     const db = (x, z) => (Math.abs(x) < z ? 0 : (x - Math.sign(x) * z) / (1 - z));
     const sx = db(inp.roll, 0.06), sy = db(inp.pitch, 0.06);
-    const vmax = p.maxSpeed || 12;
+    const cine = this.cfg.cine;
+    const vmax = cine ? Math.min(4.5, p.maxSpeed || 12) : p.maxSpeed || 12;
     let vD;
-    if (sx === 0 && sy === 0) {
+    if (this.auto) {
+      // Voo automático (QuickShots): o app manda a velocidade desejada no mundo.
+      this.posHold = null;
+      vD = v3(this.auto.vel.x, 0, this.auto.vel.z);
+    } else if (sx === 0 && sy === 0) {
       const hv = Math.hypot(s.vel.x, s.vel.z);
       if (!this.posHold && hv < 0.8) this.posHold = v3(s.pos.x, 0, s.pos.z);
       if (this.posHold) {
@@ -443,7 +451,7 @@ export class Drone {
       this.posHold = null;
       vD = toWorld(sx * vmax, 0, -sy * vmax);
     }
-    const kv = 2.2;
+    const kv = cine || this.auto ? 1.2 : 2.2;
     let ax = (vD.x - s.vel.x) * kv, az = (vD.z - s.vel.z) * kv;
     const amax = G * Math.tan((this.cfg.maxAngle || 35) * D2R);
     const al = Math.hypot(ax, az);
@@ -451,12 +459,15 @@ export class Drone {
 
     const tz = db((inp.thr - 0.5) * 2, 0.1);
     let vzD;
-    if (tz === 0) {
+    if (this.auto) {
+      this.altHold = null;
+      vzD = this.auto.vel.y;
+    } else if (tz === 0) {
       if (this.altHold === null) this.altHold = s.pos.y + s.vel.y * 0.3;
       vzD = clamp((this.altHold - s.pos.y) * 1.8, -2, 2);
     } else {
       this.altHold = null;
-      vzD = tz > 0 ? tz * (p.maxClimb || 5) : tz * (p.maxDescent || 3);
+      vzD = tz > 0 ? tz * (cine ? 2 : p.maxClimb || 5) : tz * (cine ? 1.5 : p.maxDescent || 3);
     }
     // Perto do chão a descida é suavizada (pouso assistido).
     if (vzD < 0) vzD = Math.max(vzD, -Math.max(0.6, this.tel.agl * 0.9));

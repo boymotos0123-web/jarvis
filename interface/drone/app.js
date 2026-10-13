@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import { Sky } from 'three/addons/objects/Sky.js';
 import { createWorld, mulberry32 } from './world.js';
 import { Drone, PRESETS, MODES, Q, rateDps, clamp } from './sim.js';
+import { createMedia } from './media.js';
 
 const $ = (id) => document.getElementById(id);
 const D2R = Math.PI / 180;
@@ -33,7 +34,7 @@ const settings = Object.assign({
   quality: isTouch ? 'medium' : 'high', volume: 0.55,
   propWash: true, groundEffect: true, battery: true,
   showMap: !(isTouch && innerHeight < 500), showBlackbox: false, deadband: 0.03,
-  map: DEFAULT_MAP, per: {}, gimbal: -12, propsInView: false,
+  map: DEFAULT_MAP, per: {}, gimbal: -12, propsInView: false, cine: false, shotRecord: true, hud: true,
 }, store.get('settings', {}));
 const save = () => store.set('settings', settings);
 
@@ -552,6 +553,9 @@ function pollGamepad() {
   if (edge(3)) action('cam');
   if (edge(9)) action('menu');
   if (edge(8)) action('replay');
+  if (edge(4)) action('photo');
+  if (edge(5)) action('record');
+  pad.gimbal = (gp.buttons[7]?.value || 0) - (gp.buttons[6]?.value || 0);
   pad.prevButtons = pressed;
   return gp;
 }
@@ -574,6 +578,9 @@ function updateInput(dt) {
   if (posMode) kb.thr = approach(kb.thr, 0.5 + tt * 0.5, 2.5);
   else kb.thr = clamp(kb.thr + tt * (tt > 0 ? 0.55 : 0.8) * dt * (k('ShiftLeft') ? 2 : 1), 0, 1);
   const kbActive = rt || pt || yt || tt;
+  // Gimbal: Q/E ou gatilhos do gamepad.
+  const gIn = target('KeyE', 'KeyQ') || pad.gimbal || 0;
+  if (gIn) { gimbalPitch = clamp(gimbalPitch + gIn * 45 * dt, -90, 20); settings.gimbal = gimbalPitch; }
 
   if (gp && pad.active && !kbActive) {
     const m = settings.map, d = settings.deadband;
@@ -597,7 +604,10 @@ addEventListener('keydown', (e) => {
   if (e.code !== 'Escape' && e.target.closest && e.target.closest('select, input')) return;
   sound.init();
   if (!keys.has(e.code)) {
-    const map = { Space: 'arm', KeyR: 'reset', KeyC: 'cam', KeyM: 'mode', Escape: 'menu', KeyP: 'menu', KeyT: 'replay', KeyB: 'blackbox', KeyN: 'map', KeyV: 'video', KeyF: 'fullscreen' };
+    const map = {
+      Space: 'arm', KeyR: 'reset', KeyC: 'cam', KeyM: 'mode', Escape: 'menu', KeyT: 'replay', KeyB: 'blackbox', KeyN: 'map', KeyV: 'video', KeyF: 'fullscreen',
+      KeyP: 'photo', KeyG: 'record', KeyO: 'gallery', KeyZ: 'cine', KeyH: 'hud', Digit1: 'shot-dronie', Digit2: 'shot-orbit', Digit3: 'shot-rocket',
+    };
     if (map[e.code]) { e.preventDefault(); action(map[e.code]); }
   }
   if (e.code.startsWith('Arrow') || e.code === 'Space') e.preventDefault();
@@ -695,6 +705,7 @@ function applySettingsToDrone() {
   drone.cfg.propWash = settings.propWash;
   drone.cfg.groundEffect = settings.groundEffect;
   drone.cfg.battery = settings.battery;
+  drone.cfg.cine = settings.cine;
   if (model && model.userData.cam) model.userData.cam.rotation.x = pp.camTilt * D2R;
 }
 
@@ -712,6 +723,7 @@ function spawnPoint() {
 }
 
 function resetFlight() {
+  if (shot.kind) stopShot();
   drone.reset(spawnPoint());
   applySettingsToDrone();
   game.prevPos = { ...drone.s.pos };
@@ -736,11 +748,20 @@ function action(a) {
   sound.init();
   const st = game.state;
   if (a === 'menu') {
+    if (st === 'gallery') return closeGallery();
+    if (!$('cinePanel').hidden) { $('cinePanel').hidden = true; return; }
     if (st === 'menu') return closeMenu();
     if (st === 'replay') return exitReplay();
     if (st === 'fly' || st === 'crash' || st === 'results') return openMenu();
     return;
   }
+  if (a === 'gallery') return st === 'gallery' ? closeGallery() : openGallery();
+  if (a === 'gal-close') return closeGalleryView();
+  if (st === 'gallery') return;
+  if (a === 'photo') return takePhoto();
+  if (a === 'record') return toggleRecord();
+  if (a === 'hud') { settings.hud = !settings.hud; applyHud(); save(); return; }
+  if (a === 'cine-panel') { const cp = $('cinePanel'); cp.hidden = !cp.hidden; if (!cp.hidden) syncCinePanel(); return; }
   if (a === 'fullscreen') { document.documentElement.requestFullscreen?.().catch(() => {}); return; }
   if (a === 'blackbox') { settings.showBlackbox = !settings.showBlackbox; $('blackbox').hidden = !settings.showBlackbox; save(); return; }
   if (a === 'map') { settings.showMap = !settings.showMap; $('minimap').hidden = !settings.showMap; save(); return; }
@@ -768,7 +789,17 @@ function action(a) {
     }
     return;
   }
+  if (a === 'cine') {
+    settings.cine = !settings.cine;
+    drone.cfg.cine = settings.cine;
+    save();
+    syncCinePanel();
+    toast(settings.cine ? (drone.cfg.mode === 'pos' ? 'Modo Cine' : 'Modo Cine (ative o GPS com M)') : 'Modo Cine desligado', 1.8);
+    return;
+  }
+  if (a.startsWith('shot-')) return startShot(a.slice(5));
   if (a === 'mode') {
+    if (shot.kind) stopShot();
     const order = ['acro', 'angle', 'pos'];
     const pp = perPreset();
     pp.mode = order[(order.indexOf(drone.cfg.mode) + 1) % order.length];
@@ -783,6 +814,7 @@ function action(a) {
 function syncTouchThrottleIfIdle() { if (touch.l === null) syncTouchThrottle(); }
 
 drone.on('crash', (e) => {
+  if (shot.kind) stopShot();
   game.crashInfo = { ...e, speed: Math.hypot(drone.s.vel.x, drone.s.vel.y, drone.s.vel.z), time: drone.s.armTime };
   game.flash = 1;
   sound.burst(0.9, 0.5, 1400);
@@ -804,6 +836,186 @@ function fmt(t) {
   const m = Math.floor(t / 60), s = t - m * 60;
   return `${String(m).padStart(2, '0')}:${s.toFixed(2).padStart(5, '0')}`;
 }
+
+// ---------- foto, vídeo e galeria ----------
+const media = createMedia({ canvas: renderer.domElement, renderer, audio: () => (sound.ctx ? sound : null), onChange: () => updateMediaUI() });
+
+function flashShot() {
+  const f = $('flash');
+  f.classList.remove('go');
+  void f.offsetWidth;
+  f.classList.add('go');
+}
+async function takePhoto() {
+  if (!['fly', 'crash', 'results', 'replay'].includes(game.state)) return;
+  sound.beep(2600, 0.04, 0.12);
+  flashShot();
+  const it = await media.photo(2);
+  if (it) toast(`Foto na galeria · ${it.w}×${it.h}`, 1.4);
+}
+function toggleRecord() {
+  if (media.recording) { media.stopRecording(() => toast('Vídeo salvo na galeria', 1.6)); return; }
+  if (!media.startRecording()) toast('Este navegador não grava vídeo', 2);
+}
+const fmtDur = (t) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).padStart(2, '0')}`;
+function updateMediaUI() {
+  $('rec').hidden = !media.recording;
+  document.querySelectorAll('[data-act="record"]').forEach((b) => b.classList.toggle('on', media.recording));
+  $('galCount').textContent = media.items.length ? String(media.items.length) : '';
+  if (game.state === 'gallery') renderGallery();
+}
+function applyHud() {
+  const on = settings.hud;
+  $('osd').hidden = !on;
+  $('topbar').classList.toggle('faded', !on);
+  $('minimap').hidden = !on || !settings.showMap;
+  $('blackbox').hidden = !on || !settings.showBlackbox;
+}
+
+function openGallery() {
+  if (game.state === 'start' || game.state === 'boot') return;
+  game.resumeTo = game.state === 'menu' ? game.resumeTo : game.state;
+  if (shot.kind) stopShot();
+  if (media.recording) media.stopRecording();
+  game.state = 'gallery';
+  ['menu', 'crash', 'results', 'cinePanel'].forEach((id) => { $(id).hidden = true; });
+  $('gallery').hidden = false;
+  closeGalleryView();
+  renderGallery();
+}
+function closeGallery() {
+  closeGalleryView();
+  $('gallery').hidden = true;
+  document.activeElement?.blur();
+  const r = game.resumeTo;
+  game.state = r === 'crash' || r === 'results' || r === 'replay' ? r : 'fly';
+  if (r === 'crash') $('crash').hidden = false;
+  if (r === 'results') $('results').hidden = false;
+}
+let galUrl = null, galItem = null;
+function closeGalleryView() {
+  $('galView').hidden = true;
+  $('gallery').classList.remove('viewing');
+  $('galMedia').innerHTML = '';
+  if (galUrl) { URL.revokeObjectURL(galUrl); galUrl = null; }
+  galItem = null;
+}
+function renderGallery() {
+  const g = $('galGrid');
+  if (!media.items.length) {
+    g.innerHTML = '<p class="note">Nada aqui ainda. Durante o voo aperte <kbd>P</kbd> para foto, <kbd>G</kbd> para gravar, ou use um voo automático no painel Cine.</p>';
+    return;
+  }
+  g.innerHTML = media.items.map((it) => `<figure class="shot">
+    <button class="thumb" data-view="${it.id}" aria-label="Abrir">${it.thumb ? `<img src="${it.thumb}" alt="">` : ''}<span class="badge">${it.kind === 'video' ? '▶ ' + fmtDur(it.duration || 0) : 'FOTO'}</span></button>
+    <figcaption><span>${new Date(it.created).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })} · ${(it.size / 1048576).toFixed(1)} MB</span>
+    <span class="btns"><button class="ghost mini" data-save="${it.id}">Salvar</button><button class="ghost mini" data-del="${it.id}">Apagar</button></span></figcaption></figure>`).join('');
+}
+async function saveItem(it) {
+  const r = await media.save(it);
+  toast(r === 'saved' ? 'Arquivo enviado para o aparelho' : 'Salvamento cancelado', 1.6);
+}
+$('galGrid').addEventListener('click', (e) => {
+  const v = e.target.closest('[data-view]'), sv = e.target.closest('[data-save]'), dl = e.target.closest('[data-del]');
+  if (v) {
+    const it = media.items.find((x) => x.id === v.dataset.view);
+    if (!it) return;
+    closeGalleryView();
+    galItem = it;
+    galUrl = URL.createObjectURL(it.blob);
+    $('galMedia').innerHTML = it.kind === 'video' ? `<video src="${galUrl}" controls autoplay playsinline></video>` : `<img src="${galUrl}" alt="Foto do voo">`;
+    $('galView').hidden = false;
+    $('gallery').classList.add('viewing');
+  } else if (sv) {
+    const it = media.items.find((x) => x.id === sv.dataset.save);
+    if (it) saveItem(it);
+  } else if (dl) {
+    // Dois toques para apagar (sem diálogo de confirmação).
+    if (dl.dataset.armed) media.remove(dl.dataset.del);
+    else { dl.dataset.armed = '1'; dl.textContent = 'Confirmar?'; setTimeout(() => { if (dl.isConnected) { delete dl.dataset.armed; dl.textContent = 'Apagar'; } }, 2500); }
+  }
+});
+$('galSave').addEventListener('click', () => { if (galItem) saveItem(galItem); });
+
+// ---------- modo Cine e voos automáticos (QuickShots) ----------
+const shot = { kind: null };
+const wrap = (a) => Math.atan2(Math.sin(a), Math.cos(a));
+const droneHeading = () => { const f = Q.rot(drone.s.q, { x: 0, y: 0, z: -1 }); return Math.atan2(-f.x, -f.z); };
+const SHOT_NAMES = { dronie: 'Dronie', orbit: 'Órbita', rocket: 'Foguete' };
+
+function startShot(kind) {
+  if (shot.kind) return stopShot('Voo automático cancelado');
+  const s = drone.s;
+  if (!s.armed || s.onGround || drone.tel.agl < 1.5) return toast('Decole e suba alguns metros primeiro', 2);
+  if (drone.cfg.mode !== 'pos') {
+    perPreset().mode = 'pos';
+    drone.cfg.mode = 'pos';
+    drone.resetController();
+    kb.thr = 0.5;
+    syncTouchThrottleIfIdle();
+  }
+  const h = droneHeading();
+  const fx = -Math.sin(h), fz = -Math.cos(h);
+  Object.assign(shot, { kind, t: 0, h, fx, fz, start: { ...s.pos }, recBy: false, R: 10 });
+  shot.center = { x: s.pos.x + fx * shot.R, z: s.pos.z + fz * shot.R };
+  shot.dur = kind === 'dronie' ? 9 : kind === 'orbit' ? (2 * Math.PI * shot.R) / 3 + 1 : 7;
+  if (settings.shotRecord && !media.recording) shot.recBy = media.startRecording();
+  $('cinePanel').hidden = true;
+  toast(`${SHOT_NAMES[kind]} — mexa um stick para cancelar`, 2);
+}
+function stopShot(msg) {
+  drone.auto = null;
+  if (shot.recBy && media.recording) media.stopRecording(() => toast('Voo automático salvo na galeria', 1.8));
+  else if (msg) toast(msg, 1.4);
+  shot.kind = null;
+}
+function updateShot(dt) {
+  if (!shot.kind) return;
+  const s = drone.s;
+  const moved = Math.max(Math.abs(input.roll), Math.abs(input.pitch), Math.abs(input.yaw)) > 0.35 || Math.abs(input.thr - 0.5) > 0.35;
+  if (!s.armed || drone.cfg.mode !== 'pos' || moved) return stopShot('Voo automático cancelado');
+  shot.t += dt;
+  const ease = clamp(Math.min(shot.t / 1.5, (shot.dur - shot.t) / 1.5), 0, 1);
+  const P = PRESETS[settings.preset];
+  const hdg = droneHeading();
+  let vel, yawRate;
+  if (shot.kind === 'dronie') {
+    vel = { x: -shot.fx * 3.2 * ease, y: 1.6 * ease, z: -shot.fz * 3.2 * ease };
+    yawRate = 3 * wrap(shot.h - hdg);
+    if (P.gimbal) {
+      const dist = Math.hypot(s.pos.x - shot.start.x, s.pos.z - shot.start.z) + 2;
+      gimbalPitch = clamp((-Math.atan2(s.pos.y - shot.start.y + 1.2, dist) * 180) / Math.PI, -90, 0);
+    }
+  } else if (shot.kind === 'orbit') {
+    const rx = s.pos.x - shot.center.x, rz = s.pos.z - shot.center.z;
+    const r = Math.hypot(rx, rz) || 1;
+    const sp = 3 * ease;
+    vel = { x: (-rz / r) * sp + (rx / r) * (shot.R - r) * 0.8, y: 0, z: (rx / r) * sp + (rz / r) * (shot.R - r) * 0.8 };
+    const face = Math.atan2(rx, rz);
+    yawRate = 4 * wrap(face - hdg) - sp / shot.R;
+    if (P.gimbal) gimbalPitch = clamp((-Math.atan2(s.pos.y - shot.start.y + 1.5, shot.R) * 180) / Math.PI, -90, 0);
+  } else {
+    vel = { x: 0, y: 3 * ease, z: 0 };
+    yawRate = 0.25 * ease;
+    if (P.gimbal) gimbalPitch = -90;
+  }
+  drone.auto = { vel, yawRate };
+  if (shot.t >= shot.dur) stopShot('Voo automático concluído');
+}
+
+function syncCinePanel() {
+  $('cp-cine').checked = settings.cine;
+  $('cp-rec').checked = settings.shotRecord;
+  $('cp-gimbal').value = String(Math.round(gimbalPitch));
+  $('cp-gimbal-o').textContent = `${Math.round(gimbalPitch)}°`;
+}
+$('cinePanel').addEventListener('input', (e) => {
+  const id = e.target.id;
+  if (id === 'cp-cine') { settings.cine = e.target.checked; drone.cfg.cine = settings.cine; if (settings.cine && drone.cfg.mode !== 'pos') toast('Cine funciona no modo GPS (M)', 2); }
+  if (id === 'cp-rec') settings.shotRecord = e.target.checked;
+  if (id === 'cp-gimbal') { gimbalPitch = Number(e.target.value); settings.gimbal = gimbalPitch; $('cp-gimbal-o').textContent = `${gimbalPitch}°`; }
+  save();
+});
 
 // ---------- corrida ----------
 function bestLapKey() { return 'best.' + settings.preset; }
@@ -916,11 +1128,13 @@ function startReplay() {
   replay.prevView = game.view;
   game.state = 'replay';
   replay.t = 0; replay.playing = true;
+  $('cinePanel').hidden = true;
   if (game.view === 'fpv') game.view = 'chase';
   $('crash').hidden = true; $('results').hidden = true; $('menu').hidden = true;
   $('replayBar').hidden = false;
 }
 function exitReplay() {
+  if (replay.rec) { replay.rec = false; media.stopRecording(() => toast('Replay salvo na galeria', 1.8)); }
   game.view = replay.prevView;
   $('replayBar').hidden = true;
   game.state = replay.prevState === 'menu' ? 'fly' : replay.prevState;
@@ -1012,6 +1226,9 @@ glc.addEventListener('pointermove', (e) => {
   orbit.drag.x = e.clientX; orbit.drag.y = e.clientY;
 });
 glc.addEventListener('pointerup', () => { orbit.drag = null; });
+glc.addEventListener('wheel', (e) => {
+  if (game.view === 'fpv' && PRESETS[settings.preset].gimbal) { gimbalPitch = clamp(gimbalPitch - Math.sign(e.deltaY) * 3, -90, 20); settings.gimbal = gimbalPitch; }
+}, { passive: true });
 glc.addEventListener('wheel', (e) => { if (game.view === 'orbit') orbit.dist = clamp(orbit.dist * (e.deltaY > 0 ? 1.1 : 0.9), 0.8, 40); }, { passive: true });
 
 // ======================================================================
@@ -1456,6 +1673,13 @@ document.addEventListener('click', (e) => {
   if (a === 'map-radio') { settings.map = JSON.parse(JSON.stringify(RADIO_MAP)); save(); return renderMenu(); }
   if (a === 'rp-play') { replay.playing = !replay.playing; return; }
   if (a === 'rp-exit') return exitReplay();
+  if (a === 'rp-rec') {
+    if (replay.rec || media.recording) return;
+    replay.t = 0; replay.playing = true;
+    replay.rec = media.startRecording();
+    if (!replay.rec) toast('Este navegador não grava vídeo', 2);
+    return;
+  }
   action(a);
 });
 $('rpSeek').addEventListener('input', (e) => { replay.t = (Number(e.target.value) / 1000) * (recorder.count / 60); });
@@ -1533,6 +1757,7 @@ function frame(now) {
   let pose;
   if (game.state === 'fly' || game.state === 'crash' || game.state === 'results') {
     game.prevPos = { ...drone.s.pos };
+    if (game.state === 'fly') updateShot(dt);
     drone.update(dt, input);
     if (game.state === 'fly') {
       updateRace();
@@ -1544,7 +1769,10 @@ function frame(now) {
   } else if (game.state === 'replay') {
     const dur = recorder.count / 60;
     if (replay.playing) replay.t += dt;
-    if (replay.t >= dur) replay.t = 0;
+    if (replay.t >= dur) {
+      if (replay.rec) { replay.rec = false; replay.playing = false; replay.t = dur - 1 / 60; media.stopRecording(() => toast('Replay salvo na galeria', 1.8)); }
+      else replay.t = 0;
+    }
     const fi = clamp(Math.floor(replay.t * 60), 0, recorder.count - 1);
     pose = recorder.frame(fi);
     $('rpSeek').value = String(Math.round((replay.t / Math.max(dur, 0.01)) * 1000));
@@ -1575,6 +1803,8 @@ function frame(now) {
   if (game.race) { const gv = gateViz[game.race.next]; if (gv) gv.glow.material.opacity = 0.08 + 0.08 * Math.sin(now / 180); }
 
   renderer.render(scene, camera);
+  media.afterRender(() => renderer.render(scene, camera));
+  if (media.recording) $('recTime').textContent = fmtDur(media.recTime);
 
   const tel = drone.telemetry();
   const pl = world.pilot;
@@ -1618,6 +1848,7 @@ resize();
 $('minimap').hidden = !settings.showMap;
 $('blackbox').hidden = !settings.showBlackbox;
 $('loading').hidden = true;
+applyHud();
 showStart();
 requestAnimationFrame(frame);
 

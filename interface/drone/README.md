@@ -27,6 +27,8 @@ Precisa de internet só para baixar o three.js (jsDelivr) e as fontes.
 | OSD | Modo, LQ, tensão/célula/corrente/mAh, cronômetro, horizonte artificial, altitude, vario, velocidade, acelerador, G, seta para home/objetivo, alertas |
 | Atividades | Voo livre · Corrida (12 portais, 3 voltas, melhor volta salva) · Pouso de precisão (chão, telhado de container, topo da torre) |
 | Ferramentas | Replay dos últimos 40 s, blackbox ao vivo (setpoint × gyro e motores), minimapa |
+| Foto e vídeo | Foto em 2× a resolução da tela (JPG), gravação de vídeo com som dos motores (MP4 ou WebM, sem o OSD), gravação do replay, galeria guardada no navegador |
+| Cinema | Modo Cine (lento e suave), gimbal ajustável (Q/E, roda do mouse ou gatilhos), voos automáticos Dronie, Órbita e Foguete com gravação automática, esconder HUD |
 | Controles | Teclado, gamepad, **rádio RC via USB** (EdgeTX/OpenTX em modo joystick) com detecção de eixos, e sticks de toque no celular |
 
 ## Comandos
@@ -44,9 +46,15 @@ Precisa de internet só para baixar o three.js (jsDelivr) e as fontes.
 | T | Replay |
 | B / N | Blackbox / minimapa |
 | V | Vídeo digital / analógico |
+| P / G | Foto / gravar vídeo |
+| O | Galeria |
+| Z | Modo Cine |
+| Q / E | Gimbal para baixo / para cima (drone de câmera) |
+| 1 / 2 / 3 | Dronie / Órbita / Foguete |
+| H | Esconder HUD |
 | Esc | Menu e configurações |
 
-Gamepad: A armar · B reset · X modo · Y câmera · Start menu. Rádio: escolha o perfil
+Gamepad: A armar · B reset · X modo · Y câmera · Start menu · LB foto · RB gravar · gatilhos gimbal. Rádio: escolha o perfil
 "Rádio RC (AETR)" em Menu → Controles e use **Detectar** em cada canal; armar pode ser uma chave.
 
 ## Arquivos
@@ -55,7 +63,8 @@ Gamepad: A armar · B reset · X modo · Y câmera · Start menu. Rádio: escolh
 |---|---|
 | `sim.js` | Física, bateria e controladora de voo (sem dependência de renderização) |
 | `world.js` | Terreno, colisões, pista, prédios, árvores e alvos (determinístico pela semente) |
-| `app.js` | Renderização three.js, entrada, OSD, áudio, corrida, replay e menus |
+| `app.js` | Renderização three.js, entrada, OSD, áudio, corrida, replay, voos automáticos e menus |
+| `media.js` | Fotos, gravação de vídeo e galeria (IndexedDB) |
 | `index.html` | Página, estilos e import map |
 
 Testes da física: `node --test tests/drone_sim.test.mjs` (na raiz do repositório).

@@ -79,3 +79,16 @@ test('bateria de 5" dura entre 8 e 20 min em hover', () => {
   while (d.bat.soc > 0.2 && t < 1500) { run(d, 1, centered); t++; }
   assert.ok(t > 8 * 60 && t < 20 * 60, `${(t / 60).toFixed(1)} min`);
 });
+
+test('voo automático segue a velocidade pedida e o modo Cine limita a velocidade', () => {
+  const d = new Drone(world, 'camera');
+  d.reset({ x: 0, z: 0, y: 20, yaw: 0 });
+  d.cfg.mode = 'pos'; d.s.armed = true;
+  d.auto = { vel: { x: 3, y: 1, z: 0 }, yawRate: 0 };
+  run(d, 5, centered);
+  assert.ok(Math.abs(d.s.vel.x - 3) < 0.4 && Math.abs(d.s.vel.y - 1) < 0.3, `vel ${d.s.vel.x.toFixed(2)}, ${d.s.vel.y.toFixed(2)}`);
+  d.auto = null;
+  d.cfg.cine = true;
+  run(d, 6, { ...centered, pitch: 1 });
+  assert.ok(Math.hypot(d.s.vel.x, d.s.vel.z) < 5, 'Cine até 4,5 m/s');
+});

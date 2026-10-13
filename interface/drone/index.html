@@ -125,6 +125,33 @@
   #touchBtns button { background: rgba(10,14,17,.7); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; font-family: var(--display); font-weight: 700; letter-spacing: .06em; font-size: 13px; text-transform: uppercase; }
   #touchBtns button[data-act="arm"] { border-color: var(--accent); color: var(--accent); min-width: 84px; }
 
+  /* ---------- foto, vídeo, galeria ---------- */
+  .tb b { font-family: var(--mono); color: var(--accent); margin-left: 4px; font-weight: 400; }
+  .tb.on, #touchBtns button.on { border-color: var(--bad); color: var(--bad); }
+  #topbar { flex-wrap: wrap; justify-content: flex-end; max-width: calc(100vw - 24px); }
+  #topbar.faded { opacity: .22; }
+  #topbar.faded:hover { opacity: 1; }
+  #rec { position: absolute; top: calc(12px + env(safe-area-inset-top, 0px)); left: max(14px, env(safe-area-inset-left)); display: flex; gap: 8px; align-items: center; font-family: var(--mono); font-size: 15px; color: #fff; background: rgba(10,14,17,.72); border: 1px solid var(--bad); border-radius: 6px; padding: 4px 10px; z-index: 5; pointer-events: none; }
+  #rec i { width: 10px; height: 10px; border-radius: 50%; background: var(--bad); animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: .2; } }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 7; }
+  #flash.go { animation: flash .35s ease-out; }
+  @keyframes flash { from { opacity: .7; } to { opacity: 0; } }
+  #cinePanel { position: absolute; top: calc(52px + env(safe-area-inset-top, 0px)); right: max(10px, env(safe-area-inset-right)); width: min(300px, calc(100vw - 32px)); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; display: grid; gap: 10px; z-index: 6; }
+  #cinePanel .label { margin: 4px 0 0; }
+  .shotbtns { display: flex; gap: 6px; flex-wrap: wrap; }
+  #gallery .sheet { display: grid; grid-template-rows: auto 1fr auto; max-height: min(760px, 100%); overflow: hidden; }
+  .gal { padding: 16px 18px; overflow-y: auto; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); align-content: start; }
+  .shot { margin: 0; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; display: grid; min-width: 0; }
+  .shot .thumb { position: relative; padding: 0; border: 0; background: #05080a; aspect-ratio: 16 / 9; cursor: pointer; overflow: hidden; max-width: 100%; }
+  .shot .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .shot .badge { position: absolute; left: 8px; top: 8px; font-family: var(--mono); font-size: 12px; background: rgba(0,0,0,.7); padding: 2px 6px; border-radius: 4px; }
+  .shot figcaption { padding: 8px 10px; display: grid; gap: 6px; font-size: 12.5px; color: var(--muted); }
+  .shot .btns { justify-content: flex-start; }
+  #galView { padding: 12px 18px 16px; border-top: 1px solid var(--line); display: grid; gap: 12px; }
+  #galMedia img, #galMedia video { width: 100%; max-height: 52vh; object-fit: contain; background: #000; border-radius: 6px; display: block; }
+  #gallery.viewing .gal { display: none; }
+  @media (pointer: coarse) { .tb.desk { display: none; } }
   #loading { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--mono); color: var(--muted); z-index: 20; background: var(--bg); padding: 0 16px; text-align: center; }
 
   @media (max-width: 640px) {
@@ -153,8 +180,30 @@
   <div id="topbar" hidden>
     <button class="tb" data-act="cam" title="Trocar câmera">Câmera<kbd>C</kbd></button>
     <button class="tb" data-act="mode" title="Trocar modo de voo">Modo<kbd>M</kbd></button>
-    <button class="tb" data-act="replay" title="Replay dos últimos 40 s">Replay<kbd>T</kbd></button>
+    <button class="tb" data-act="cine-panel" title="Modo Cine, voos automáticos e gimbal">Cine</button>
+    <button class="tb desk" data-act="photo" title="Tirar foto">Foto<kbd>P</kbd></button>
+    <button class="tb desk" data-act="record" title="Gravar vídeo">Gravar<kbd>G</kbd></button>
+    <button class="tb" data-act="gallery" title="Fotos e vídeos">Galeria<b id="galCount"></b><kbd>O</kbd></button>
     <button class="tb" data-act="menu" title="Menu e configurações">Menu<kbd>Esc</kbd></button>
+  </div>
+
+  <div id="rec" hidden><i></i>REC <span id="recTime">00:00</span></div>
+  <div id="flash"></div>
+
+  <div id="cinePanel" hidden>
+    <label class="check"><input type="checkbox" id="cp-cine">Modo Cine (lento e suave, no modo GPS)</label>
+    <div class="label">Voos automáticos</div>
+    <div class="shotbtns">
+      <button class="ghost mini" data-act="shot-dronie" title="Afasta e sobe olhando para trás">Dronie <kbd>1</kbd></button>
+      <button class="ghost mini" data-act="shot-orbit" title="Circula um ponto 10 m à frente">Órbita <kbd>2</kbd></button>
+      <button class="ghost mini" data-act="shot-rocket" title="Sobe na vertical olhando para baixo">Foguete <kbd>3</kbd></button>
+    </div>
+    <label class="check"><input type="checkbox" id="cp-rec">Gravar o voo automático</label>
+    <label class="field" for="cp-gimbal"><span>Gimbal (câmera DJI) <output id="cp-gimbal-o"></output></span><input type="range" id="cp-gimbal" min="-90" max="20" step="1"></label>
+    <div class="shotbtns">
+      <button class="ghost mini" data-act="replay">Replay <kbd>T</kbd></button>
+      <button class="ghost mini" data-act="hud">Esconder HUD <kbd>H</kbd></button>
+    </div>
   </div>
 
   <div id="touch" hidden>
@@ -163,6 +212,8 @@
     <div id="touchBtns">
       <button data-act="arm">Armar</button>
       <button data-act="reset">Reset</button>
+      <button data-act="photo">Foto</button>
+      <button data-act="record">REC</button>
     </div>
   </div>
 
@@ -191,6 +242,10 @@
           <div><kbd>R</kbd> reiniciar</div>
           <div><kbd>C</kbd> câmera · <kbd>M</kbd> modo</div>
           <div><kbd>T</kbd> replay · <kbd>B</kbd> blackbox</div>
+          <div><kbd>P</kbd> foto · <kbd>G</kbd> gravar</div>
+          <div><kbd>O</kbd> galeria · <kbd>H</kbd> esconder HUD</div>
+          <div><kbd>Z</kbd> modo Cine · <kbd>Q</kbd><kbd>E</kbd> gimbal</div>
+          <div><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> Dronie · Órbita · Foguete</div>
         </div>
       </div>
       <div class="row">
@@ -247,8 +302,26 @@
     <button class="ghost mini" data-act="rp-play" id="rpPlay">Pausar</button>
     <input type="range" id="rpSeek" min="0" max="1000" value="0" aria-label="Posição do replay">
     <span id="rpTime">0.0 s</span>
+    <button class="ghost mini" data-act="rp-rec" id="rpRec">Gravar replay</button>
     <button class="ghost mini" data-act="rp-exit">Sair</button>
   </div>
+
+  <section id="gallery" class="overlay dim" hidden>
+    <div class="sheet" role="dialog" aria-label="Galeria">
+      <div class="mhead">
+        <h2>Galeria</h2>
+        <button class="go" data-act="gallery" style="padding:8px 22px;font-size:16px">Voltar a voar</button>
+      </div>
+      <div class="gal" id="galGrid"></div>
+      <div id="galView" hidden>
+        <div id="galMedia"></div>
+        <div class="btns">
+          <button class="ghost" data-act="gal-close">Fechar</button>
+          <button class="go" id="galSave" style="padding:10px 24px;font-size:16px">Salvar no aparelho</button>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <div id="loading">Carregando motor 3D…</div>
 </div>
