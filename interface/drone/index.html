@@ -1,0 +1,269 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>JARVIS FPV Sim</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;700;800&family=Saira:wght@400;500;600&family=Share+Tech+Mono&display=swap">
+<style>
+  /* Layout: cockpit em tela cheia — o voo ocupa tudo; painéis flutuam como telas de óculos FPV. */
+  :root {
+    --bg: #0b0f12;
+    --panel: rgba(13, 18, 22, 0.94);
+    --panel-2: #141b21;
+    --line: #26323c;
+    --fg: #e7edf1;
+    --muted: #8796a2;
+    --accent: #ffb21e;
+    --accent-ink: #1b1305;
+    --ok: #4bd980;
+    --bad: #ff5b4f;
+    --cyan: #5cc8ff;
+    --display: 'Saira Condensed', 'Arial Narrow', 'Roboto Condensed', sans-serif;
+    --body: 'Saira', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'Share Tech Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+    color-scheme: dark;
+  }
+  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--fg); font-family: var(--body); overflow: hidden; touch-action: none; -webkit-user-select: none; user-select: none; }
+  [hidden] { display: none !important; }
+  #app { position: fixed; inset: 0; }
+  canvas { display: block; }
+  #gl, #noise, #osd { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #noise { pointer-events: none; opacity: 0; image-rendering: pixelated; mix-blend-mode: screen; }
+  #scan { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: repeating-linear-gradient(to bottom, rgba(0,0,0,.22) 0 1px, transparent 1px 3px); }
+  #osd { pointer-events: none; }
+  #minimap { position: absolute; left: max(14px, env(safe-area-inset-left)); top: 50%; transform: translateY(-50%); width: 150px; height: 150px; border-radius: 50%; pointer-events: none; }
+  #blackbox { position: absolute; right: max(12px, env(safe-area-inset-right)); top: calc(56px + env(safe-area-inset-top, 0px)); width: 300px; height: 210px; pointer-events: none; background: rgba(8, 12, 15, 0.72); border: 1px solid var(--line); border-radius: 6px; }
+
+  button { font: inherit; color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  #topbar { position: absolute; top: calc(10px + env(safe-area-inset-top, 0px)); right: max(10px, env(safe-area-inset-right)); display: flex; gap: 6px; z-index: 5; }
+  .tb { background: rgba(10, 14, 17, 0.7); border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font-family: var(--display); font-weight: 700; letter-spacing: .06em; font-size: 13px; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(6px); }
+  .tb:hover { border-color: var(--accent); }
+  .tb kbd { font-family: var(--mono); color: var(--muted); font-size: 11px; margin-left: 4px; }
+
+  #toast { position: absolute; left: 50%; top: 22%; transform: translateX(-50%); font-family: var(--display); font-weight: 800; letter-spacing: .08em; font-size: clamp(18px, 3.2vw, 30px); text-transform: uppercase; text-align: center; color: var(--accent); text-shadow: 0 2px 0 #000, 0 0 12px rgba(0,0,0,.8); pointer-events: none; transition: opacity .3s; opacity: 0; white-space: nowrap; }
+  #toast.show { opacity: 1; }
+
+  /* ---------- telas sobrepostas ---------- */
+  .overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: calc(16px + env(safe-area-inset-top, 0px)) 16px calc(16px + env(safe-area-inset-bottom, 0px)); z-index: 10; overflow-y: auto; }
+  .overlay.dim { background: rgba(5, 8, 10, 0.55); }
+  .sheet { width: min(980px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 30px 80px rgba(0,0,0,.55); }
+
+  #start .sheet { padding: clamp(18px, 3vw, 34px); display: grid; gap: 22px; }
+  .brand { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .brand h1 { margin: 0; font-family: var(--display); font-weight: 800; font-size: clamp(34px, 6vw, 62px); letter-spacing: .02em; line-height: .9; text-transform: uppercase; }
+  .brand h1 span { color: var(--accent); }
+  .brand p { margin: 0; color: var(--muted); max-width: 52ch; line-height: 1.45; }
+  .label { font-family: var(--display); font-weight: 700; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+  .card { text-align: left; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; cursor: pointer; display: grid; gap: 4px; min-width: 0; }
+  .card:hover { border-color: #3b4a56; }
+  .card[aria-pressed="true"] { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
+  .card b { font-family: var(--display); font-size: 20px; font-weight: 700; letter-spacing: .02em; }
+  .card small { color: var(--muted); font-size: 12.5px; line-height: 1.35; }
+  .card .spec { font-family: var(--mono); font-size: 12px; color: var(--cyan); }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+  .go { background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 8px; padding: 14px 34px; font-family: var(--display); font-weight: 800; font-size: 22px; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+  .go:hover { filter: brightness(1.08); }
+  .ghost { background: transparent; border: 1px solid var(--line); border-radius: 8px; padding: 10px 16px; font-family: var(--display); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; cursor: pointer; }
+  .ghost:hover { border-color: var(--accent); }
+  .keys { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 6px 18px; font-size: 13px; color: var(--muted); }
+  .keys div { display: flex; gap: 8px; align-items: baseline; }
+  kbd { font-family: var(--mono); background: #0a0e11; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 1px 6px; color: var(--fg); font-size: 12px; white-space: nowrap; }
+  #padStatus { font-family: var(--mono); font-size: 12.5px; color: var(--muted); }
+  #padStatus.on { color: var(--ok); }
+
+  /* ---------- menu / configurações ---------- */
+  #menu .sheet { display: grid; grid-template-rows: auto 1fr auto; max-height: min(760px, 100%); overflow: hidden; }
+  .mhead { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 18px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .mhead h2 { margin: 0; font-family: var(--display); font-size: 26px; letter-spacing: .06em; text-transform: uppercase; }
+  .tabs { display: flex; gap: 2px; flex-wrap: wrap; }
+  .tab { background: transparent; border: 0; border-bottom: 2px solid transparent; padding: 8px 12px; font-family: var(--display); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); cursor: pointer; }
+  .tab[aria-selected="true"] { color: var(--fg); border-bottom-color: var(--accent); }
+  .pane { padding: 18px; overflow-y: auto; display: grid; gap: 14px; align-content: start; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .field { display: grid; gap: 6px; min-width: 0; }
+  .field > span { font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+  .field output { font-family: var(--mono); color: var(--fg); }
+  select, input[type="number"] { background: #0a0e11; color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; font: inherit; min-width: 0; }
+  input[type="range"] { width: 100%; accent-color: var(--accent); }
+  .check { display: flex; gap: 10px; align-items: center; font-size: 14px; cursor: pointer; }
+  .check input { width: 18px; height: 18px; accent-color: var(--accent); }
+  .group { grid-column: 1 / -1; font-family: var(--display); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: 12px; color: var(--accent); border-top: 1px solid var(--line); padding-top: 12px; margin-top: 4px; }
+  .group:first-child { border-top: 0; padding-top: 0; margin-top: 0; }
+  .note { grid-column: 1 / -1; color: var(--muted); font-size: 13px; line-height: 1.5; margin: 0; }
+  .mfoot { display: flex; justify-content: space-between; gap: 10px; padding: 12px 18px; border-top: 1px solid var(--line); flex-wrap: wrap; }
+  .map-table { grid-column: 1 / -1; display: grid; gap: 8px; }
+  .map-row { display: grid; grid-template-columns: 90px minmax(0, 1fr) auto auto minmax(80px, 1.2fr); gap: 8px; align-items: center; }
+  .bar { height: 8px; background: #0a0e11; border: 1px solid var(--line); border-radius: 4px; position: relative; overflow: hidden; }
+  .bar i { position: absolute; top: 0; bottom: 0; left: 50%; width: 3px; background: var(--accent); }
+  .mini { padding: 6px 10px; font-size: 12px; }
+
+  /* ---------- crash / resultados ---------- */
+  #crash .sheet, #results .sheet { width: min(460px, 100%); padding: 24px; display: grid; gap: 14px; text-align: center; }
+  #crash h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 48px; letter-spacing: .1em; color: var(--bad); }
+  #results h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 34px; letter-spacing: .06em; text-transform: uppercase; }
+  .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 16px; font-family: var(--mono); font-size: 14px; text-align: left; }
+  .stats span:nth-child(odd) { color: var(--muted); }
+  .btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  #replayBar { position: absolute; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); display: flex; gap: 8px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; z-index: 6; font-family: var(--mono); font-size: 13px; }
+  #replayBar b { color: var(--bad); font-family: var(--display); letter-spacing: .1em; }
+  #replayBar input { width: min(320px, 40vw); }
+
+  /* ---------- controles de toque ---------- */
+  #touch { position: absolute; inset: 0; pointer-events: none; z-index: 4; }
+  .stick { position: absolute; bottom: calc(22px + env(safe-area-inset-bottom, 0px)); width: min(34vw, 170px); aspect-ratio: 1; border-radius: 50%; border: 2px solid rgba(255,255,255,.22); background: radial-gradient(circle, rgba(255,255,255,.06), rgba(0,0,0,.18)); pointer-events: auto; touch-action: none; max-width: 100%; }
+  .stick::before, .stick::after { content: ''; position: absolute; background: rgba(255,255,255,.14); }
+  .stick::before { left: 50%; top: 10%; bottom: 10%; width: 1px; }
+  .stick::after { top: 50%; left: 10%; right: 10%; height: 1px; }
+  #stickL { left: max(18px, env(safe-area-inset-left)); }
+  #stickR { right: max(18px, env(safe-area-inset-right)); }
+  .knob { position: absolute; width: 38%; aspect-ratio: 1; border-radius: 50%; background: rgba(255, 178, 30, .85); box-shadow: 0 2px 10px rgba(0,0,0,.5); transform: translate(-50%, -50%); left: 50%; top: 50%; }
+  #touchBtns { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(22px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 6px; pointer-events: auto; flex-wrap: wrap; justify-content: center; width: min(40vw, 260px); }
+  #touchBtns button { background: rgba(10,14,17,.7); border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; font-family: var(--display); font-weight: 700; letter-spacing: .06em; font-size: 13px; text-transform: uppercase; }
+  #touchBtns button[data-act="arm"] { border-color: var(--accent); color: var(--accent); min-width: 84px; }
+
+  #loading { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--mono); color: var(--muted); z-index: 20; background: var(--bg); padding: 0 16px; text-align: center; }
+
+  @media (max-width: 640px) {
+    #minimap { width: 110px; height: 110px; }
+    #blackbox { width: 220px; height: 160px; }
+    .map-row { grid-template-columns: 70px minmax(0, 1fr) auto auto; }
+    .map-row .bar { grid-column: 1 / -1; }
+    .tb kbd { display: none; }
+  }
+  @media (max-height: 500px) {
+    #minimap { width: 76px; height: 76px; left: 50%; top: auto; bottom: calc(80px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); }
+    #blackbox { width: 200px; height: 140px; }
+  }
+  @media (prefers-reduced-motion: reduce) { #toast { transition: none; } }
+</style>
+
+<div id="app">
+  <canvas id="gl"></canvas>
+  <canvas id="noise" width="160" height="90"></canvas>
+  <div id="scan"></div>
+  <canvas id="osd"></canvas>
+  <canvas id="minimap" width="336" height="336"></canvas>
+  <canvas id="blackbox" width="600" height="420" hidden></canvas>
+  <div id="toast"></div>
+
+  <div id="topbar" hidden>
+    <button class="tb" data-act="cam" title="Trocar câmera">Câmera<kbd>C</kbd></button>
+    <button class="tb" data-act="mode" title="Trocar modo de voo">Modo<kbd>M</kbd></button>
+    <button class="tb" data-act="replay" title="Replay dos últimos 40 s">Replay<kbd>T</kbd></button>
+    <button class="tb" data-act="menu" title="Menu e configurações">Menu<kbd>Esc</kbd></button>
+  </div>
+
+  <div id="touch" hidden>
+    <div class="stick" id="stickL"><div class="knob"></div></div>
+    <div class="stick" id="stickR"><div class="knob"></div></div>
+    <div id="touchBtns">
+      <button data-act="arm">Armar</button>
+      <button data-act="reset">Reset</button>
+    </div>
+  </div>
+
+  <section id="start" class="overlay dim" hidden>
+    <div class="sheet">
+      <div class="brand">
+        <h1>JARVIS <span>FPV</span> Sim</h1>
+        <p>Física de multirrotor a 400 Hz, controladora PID no estilo Betaflight, bateria com queda de tensão, vento, prop wash e efeito solo.</p>
+      </div>
+      <div>
+        <div class="label">Aeronave</div>
+        <div class="cards" id="presetCards"></div>
+      </div>
+      <div>
+        <div class="label">Atividade</div>
+        <div class="cards" id="activityCards"></div>
+      </div>
+      <div>
+        <div class="label">Comandos</div>
+        <div class="keys">
+          <div><kbd>W</kbd><kbd>S</kbd> acelerador</div>
+          <div><kbd>A</kbd><kbd>D</kbd> yaw</div>
+          <div><kbd>↑</kbd><kbd>↓</kbd> pitch</div>
+          <div><kbd>←</kbd><kbd>→</kbd> roll</div>
+          <div><kbd>Espaço</kbd> armar / desarmar</div>
+          <div><kbd>R</kbd> reiniciar</div>
+          <div><kbd>C</kbd> câmera · <kbd>M</kbd> modo</div>
+          <div><kbd>T</kbd> replay · <kbd>B</kbd> blackbox</div>
+        </div>
+      </div>
+      <div class="row">
+        <span id="padStatus">Nenhum controle USB detectado. Conecte e mexa um stick (gamepad ou rádio em modo joystick).</span>
+        <div class="btns">
+          <button class="ghost" data-act="settings">Configurações</button>
+          <button class="go" id="goBtn">Voar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="menu" class="overlay dim" hidden>
+    <div class="sheet" role="dialog" aria-label="Menu">
+      <div class="mhead">
+        <h2>Pausado</h2>
+        <div class="tabs" role="tablist" id="tabs"></div>
+      </div>
+      <div class="pane" id="pane"></div>
+      <div class="mfoot">
+        <button class="ghost" data-act="home">Trocar aeronave / atividade</button>
+        <div class="btns">
+          <button class="ghost" data-act="reset">Reiniciar voo</button>
+          <button class="go" data-act="resume" style="padding:10px 26px;font-size:18px">Continuar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="crash" class="overlay" hidden>
+    <div class="sheet">
+      <h2>CRASH</h2>
+      <div class="stats" id="crashStats"></div>
+      <div class="btns">
+        <button class="ghost" data-act="replay">Replay <kbd>T</kbd></button>
+        <button class="go" data-act="reset" style="padding:10px 26px;font-size:18px">Reiniciar <kbd>R</kbd></button>
+      </div>
+    </div>
+  </section>
+
+  <section id="results" class="overlay dim" hidden>
+    <div class="sheet">
+      <h2 id="resTitle">Corrida concluída</h2>
+      <div class="stats" id="resStats"></div>
+      <div class="btns">
+        <button class="ghost" data-act="replay">Replay</button>
+        <button class="go" data-act="reset" style="padding:10px 26px;font-size:18px">Correr de novo</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="replayBar" hidden>
+    <b>REPLAY</b>
+    <button class="ghost mini" data-act="rp-play" id="rpPlay">Pausar</button>
+    <input type="range" id="rpSeek" min="0" max="1000" value="0" aria-label="Posição do replay">
+    <span id="rpTime">0.0 s</span>
+    <button class="ghost mini" data-act="rp-exit">Sair</button>
+  </div>
+
+  <div id="loading">Carregando motor 3D…</div>
+</div>
+
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module">
+  import('./app.js').catch((err) => {
+    const el = document.getElementById('loading');
+    el.hidden = false;
+    el.textContent = 'Não foi possível carregar o simulador (' + (err && err.message ? err.message : err) + '). Ele precisa de internet para baixar o three.js.';
+    console.error(err);
+  });
+</script>

@@ -12,6 +12,10 @@ VOZ/TEXTO → INTERFACE → POST /api/chat/stream (SSE) → BRAIN
   → histórico + fontes + métricas (SQLite) + eventos (SSE) → INTERFACE
 ```
 
+> **Novo: JARVIS FPV Sim** — simulador de drone 3D no navegador (física a 400 Hz, controladora estilo Betaflight,
+> corrida, pouso de precisão, gamepad/rádio/toque). Abra `/drone/` com o servidor rodando ou veja
+> [`interface/drone/README.md`](interface/drone/README.md).
+
 ---
 ## 1. Instalação (Windows)
 
