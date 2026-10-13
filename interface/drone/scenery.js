@@ -332,10 +332,10 @@ function buildGrass(scene, world, count) {
     const x = Math.cos(a) * r, z = Math.sin(a) * r;
     if (world.pads.some((p) => Math.hypot(x - p.x, z - p.z) < p.r + 0.3)) continue;
     q.setFromAxisAngle(up, rnd() * 6.28);
-    const hgt = 0.18 + rnd() * 0.32;
-    m4.compose(new THREE.Vector3(x, 0, z), q, new THREE.Vector3(1 + rnd(), hgt, 1));
+    const hgt = 0.08 + rnd() * 0.16;
+    m4.compose(new THREE.Vector3(x, 0, z), q, new THREE.Vector3(1.5 + rnd() * 1.5, hgt, 1.5));
     im.setMatrixAt(k, m4);
-    c.setHSL(0.24 + rnd() * 0.07, 0.45 + rnd() * 0.2, 0.2 + rnd() * 0.14);
+    c.setHSL(0.24 + rnd() * 0.06, 0.4 + rnd() * 0.2, 0.12 + rnd() * 0.09);
     im.setColorAt(k, c);
     k++;
   }

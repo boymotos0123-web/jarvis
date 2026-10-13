@@ -21,7 +21,8 @@ Precisa de internet só para baixar o three.js (jsDelivr) e as fontes.
 | Controladora | PID de taxa em cascata no estilo Betaflight: D na medida, feedforward, anti-windup, airmode, mixer com saturação proporcional e prioridade de roll/pitch sobre yaw |
 | Modos | **ACRO** (taxa), **ANGLE** (auto-nivelado), **GPS** (segura posição e altitude, pouso assistido) |
 | Rates | RC Rate / Super Rate / Expo por eixo, com a mesma fórmula do Betaflight |
-| Aeronaves | Freestyle 5" (6S), Cinewhoop 3" (4S), Câmera estilo DJI (3S, gimbal), Tiny Whoop 65 mm (1S) |
+| Aeronaves | Freestyle 5" (6S), Long Range 7", Cinewhoop 3", FPV com dutos estilo Avata, Câmera 900 g estilo Air, Mini 249 g, Tiny Whoop 65 mm |
+| Cenário | Campo de corrida, cidade com 60 prédios (vidro, escritórios, residenciais), ruas e postes, lago (cair na água derruba), bosques, montanhas, nuvens, grama, ciclo dia/noite com janelas acesas |
 | Câmeras | FPV com uptilt e FOV ajustáveis, perseguição, visada do piloto (zoom automático), órbita livre |
 | Vídeo | Digital HD ou analógico (ruído por distância e obstrução, scanlines, chuvisco no crash) |
 | OSD | Modo, LQ, tensão/célula/corrente/mAh, cronômetro, horizonte artificial, altitude, vario, velocidade, acelerador, G, seta para home/objetivo, alertas |
@@ -30,6 +31,21 @@ Precisa de internet só para baixar o three.js (jsDelivr) e as fontes.
 | Foto e vídeo | Foto em 2× a resolução da tela (JPG), gravação de vídeo com som dos motores (MP4 ou WebM, sem o OSD), gravação do replay, galeria guardada no navegador |
 | Cinema | Modo Cine (lento e suave), gimbal ajustável (Q/E, roda do mouse ou gatilhos), voos automáticos Dronie, Órbita e Foguete com gravação automática, esconder HUD |
 | Controles | Teclado, gamepad, **rádio RC via USB** (EdgeTX/OpenTX em modo joystick) com detecção de eixos, e sticks de toque no celular |
+
+## Mundo Real (cidades reais em 3D)
+
+A atividade **Mundo real** carrega o Google Photorealistic 3D Tiles: Rio, São Paulo, Brasília,
+Nova York, Paris, Dubai, Tóquio, Grand Canyon ou qualquer latitude/longitude.
+
+1. Em [console.cloud.google.com](https://console.cloud.google.com), crie um projeto com faturamento ativo.
+2. Ative a **Map Tiles API** e crie uma chave de API em Credenciais.
+3. Restrinja a chave ao endereço onde você abre o simulador (ex.: `http://localhost:8000/*`).
+4. Cole a chave na tela inicial do simulador (fica salva só no seu navegador).
+
+Cada voo conta como uma sessão; as primeiras 1.000 do mês são grátis. A colisão usa raios
+lançados contra a malha real em volta do drone. O modo **não funciona no link publicado no
+Claude** (a página de lá bloqueia o acesso aos servidores do Google): rode pelo JARVIS ou com
+`python3 -m http.server`.
 
 ## Comandos
 
@@ -65,6 +81,9 @@ Gamepad: A armar · B reset · X modo · Y câmera · Start menu · LB foto · R
 | `world.js` | Terreno, colisões, pista, prédios, árvores e alvos (determinístico pela semente) |
 | `app.js` | Renderização three.js, entrada, OSD, áudio, corrida, replay, voos automáticos e menus |
 | `media.js` | Fotos, gravação de vídeo e galeria (IndexedDB) |
+| `scenery.js` | Cidade, ruas, postes, lago com reflexo, nuvens e grama |
+| `post.js` | Pós-processamento: bloom, lente grande-angular, reflexo do sol |
+| `realworld.js` / `places.js` | Modo Mundo Real (Google 3D Tiles) e lugares prontos |
 | `index.html` | Página, estilos e import map |
 
 Testes da física: `node --test tests/drone_sim.test.mjs` (na raiz do repositório).

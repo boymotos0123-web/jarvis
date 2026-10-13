@@ -6,6 +6,7 @@ import { Drone, PRESETS, MODES, Q, rateDps, clamp } from './sim.js';
 import { createMedia } from './media.js';
 import { buildScenery } from './scenery.js';
 import { createPost } from './post.js';
+import { PLACES } from './places.js';
 
 const $ = (id) => document.getElementById(id);
 const D2R = Math.PI / 180;
@@ -36,7 +37,7 @@ const settings = Object.assign({
   quality: isTouch ? 'medium' : 'high', volume: 0.55,
   propWash: true, groundEffect: true, battery: true,
   showMap: !(isTouch && innerHeight < 500), showBlackbox: false, deadband: 0.03,
-  map: DEFAULT_MAP, per: {}, gimbal: -12, propsInView: false, cine: false, shotRecord: true, hud: true,
+  map: DEFAULT_MAP, per: {}, gimbal: -12, googleKey: '', realPlace: 'rio', realLat: -22.95192, realLon: -43.21049, propsInView: false, cine: false, shotRecord: true, hud: true,
 }, store.get('settings', {}));
 const save = () => store.set('settings', settings);
 
@@ -51,7 +52,8 @@ function perPreset(key = settings.preset) {
 // ======================================================================
 // Mundo, física e cena
 // ======================================================================
-const world = createWorld(1337);
+const baseWorld = createWorld(1337);
+let world = baseWorld; // troca para o Mundo Real quando ativo
 const drone = new Drone(world, settings.preset);
 
 const renderer = new THREE.WebGLRenderer({ canvas: $('gl'), antialias: true, powerPreference: 'high-performance', logarithmicDepthBuffer: true });
@@ -697,7 +699,8 @@ function syncTouchThrottle() {
 const ACTIVITIES = {
   free: { name: 'Voo livre', desc: 'Campo aberto, prédios, containers e bosques. Explore sem cronômetro.' },
   race: { name: 'Corrida', desc: '12 portais, 3 voltas. Melhor volta salva por aeronave.' },
-  land: { name: 'Pouso de precisão', desc: 'Pouse nos alvos: chão, telhado de container e topo da torre.' },
+  land: { name: 'Pouso de precisão', desc: 'Pouse nos alvos: chão, telhado de container, topo da torre e do arranha-céu.' },
+  real: { name: 'Mundo real', desc: 'Cidades reais em 3D (Google): Rio, São Paulo, Nova York, Paris… Usa sua chave de API.' },
 };
 const game = {
   state: 'boot', // boot | start | fly | menu | crash | replay | results
@@ -742,7 +745,7 @@ function selectPreset(key) {
 }
 
 function spawnPoint() {
-  return { x: world.spawn.x, z: world.spawn.z, yaw: 0 };
+  return world.real ? { ...world.spawn } : { x: world.spawn.x, z: world.spawn.z, yaw: 0 };
 }
 
 function resetFlight() {
@@ -771,6 +774,7 @@ function action(a) {
   sound.init();
   const st = game.state;
   if (a === 'menu') {
+    if (st === 'loading') return failReal('Carregamento cancelado.');
     if (st === 'gallery') return closeGallery();
     if (!$('cinePanel').hidden) { $('cinePanel').hidden = true; return; }
     if (st === 'menu') return closeMenu();
@@ -1042,6 +1046,76 @@ $('cinePanel').addEventListener('input', (e) => {
   if (id === 'cp-gimbal') { gimbalPitch = Number(e.target.value); settings.gimbal = gimbalPitch; $('cp-gimbal-o').textContent = `${gimbalPitch}°`; }
   save();
 });
+
+// ---------- Mundo Real (Google Photorealistic 3D Tiles) ----------
+let rw = null, realMod = null;
+function currentPlace() {
+  if (settings.realPlace === 'custom') return { name: 'Local escolhido', lat: settings.realLat, lon: settings.realLon };
+  return PLACES.find((p) => p.id === settings.realPlace) || PLACES[0];
+}
+function realMessage(msg, err = true) {
+  const el = $('realMsg');
+  el.textContent = msg;
+  el.classList.toggle('err', err);
+}
+async function enterReal() {
+  const key = (settings.googleKey || '').trim();
+  if (!key) { realMessage('Cole sua chave da Google Maps Platform para voar no mundo real.'); $('rw-key').focus(); return; }
+  const place = currentPlace();
+  if (!isFinite(place.lat) || !isFinite(place.lon)) { realMessage('Latitude/longitude inválidas.'); return; }
+  $('start').hidden = true;
+  $('loading').hidden = false;
+  $('loading').textContent = `Carregando ${place.name} em 3D…`;
+  try { realMod ||= await import('./realworld.js'); } catch (e) { return failReal('Não consegui carregar a biblioteca de mapas 3D. Ela precisa de internet.'); }
+  rw = realMod.createRealWorld({
+    scene, camera, renderer, apiKey: key, lat: place.lat, lon: place.lon,
+    onStatus: (st) => { if (st.error && game.state === 'loading') failReal(`O Google recusou ou falhou (${st.error.slice(0, 120)}). Confira a chave e se a Map Tiles API está ativada.`); },
+  });
+  world = rw;
+  drone.world = rw;
+  proc.visible = false;
+  scene.fog.near = 900; scene.fog.far = 7000;
+  game.state = 'loading';
+  game.loadT = 0;
+  game.realPlace = place;
+}
+function updateRealLoading(dt) {
+  game.loadT += dt;
+  $('loading').hidden = true;
+  toastLoading();
+  if (game.loadT > 4 && Math.floor(game.loadT * 2) !== Math.floor((game.loadT - dt) * 2) && rw.findSpawn()) {
+    $('attrib').hidden = false;
+    $('topbar').hidden = false;
+    $('touch').hidden = !isTouch;
+    game.state = 'fly';
+    game.view = settings.view;
+    document.activeElement?.blur();
+    resetFlight();
+    toast(game.realPlace.name, 2.5);
+    return;
+  }
+  if (game.loadT > 45) failReal('A cidade não carregou em 45 s. Confira a internet, a chave e se a Map Tiles API está ativada. No link do Claude este modo é bloqueado: rode o simulador pelo JARVIS ou localmente.');
+}
+function toastLoading() {
+  if (game.toastT <= 0.2) toast(`Carregando ${game.realPlace.name}…`, 1);
+}
+function failReal(msg) {
+  exitReal();
+  showStart();
+  realMessage(msg);
+}
+function exitReal() {
+  if (!rw) return;
+  rw.dispose();
+  rw = null;
+  world = baseWorld;
+  drone.world = baseWorld;
+  proc.visible = true;
+  scene.fog.near = 300; scene.fog.far = 1700;
+  $('attrib').hidden = true;
+  $('loading').hidden = true;
+}
+setInterval(() => { if (rw && !$('attrib').hidden) $('attrib').textContent = 'Google · ' + (rw.attribution() || 'Dados do mapa ©Google'); }, 1000);
 
 // ---------- corrida ----------
 function bestLapKey() { return 'best.' + settings.preset; }
@@ -1513,12 +1587,26 @@ function buildStart() {
   }).join('');
   document.querySelectorAll('[data-preset]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.preset === settings.preset));
   document.querySelectorAll('[data-activity]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.activity === settings.activity));
+  $('realCfg').hidden = settings.activity !== 'real';
+  $('rw-place').innerHTML = [...PLACES.map((p) => [p.id, p.name]), ['custom', 'Outro lugar (latitude/longitude)']]
+    .map(([v, t]) => `<option value="${v}"${v === settings.realPlace ? ' selected' : ''}>${t}</option>`).join('');
+  $('rw-lat').value = settings.realLat; $('rw-lon').value = settings.realLon; $('rw-key').value = settings.googleKey;
+  document.querySelectorAll('[data-custom]').forEach((el) => { el.hidden = settings.realPlace !== 'custom'; });
 }
+$('realCfg').addEventListener('input', (e) => {
+  const id = e.target.id, v = e.target.value;
+  if (id === 'rw-place') { settings.realPlace = v; document.querySelectorAll('[data-custom]').forEach((el) => { el.hidden = v !== 'custom'; }); }
+  if (id === 'rw-lat') settings.realLat = Number(v);
+  if (id === 'rw-lon') settings.realLon = Number(v);
+  if (id === 'rw-key') settings.googleKey = v.trim();
+  save();
+});
 $('presetCards').addEventListener('click', (e) => { const b = e.target.closest('[data-preset]'); if (b) { selectPreset(b.dataset.preset); buildStart(); } });
 $('activityCards').addEventListener('click', (e) => { const b = e.target.closest('[data-activity]'); if (b) { settings.activity = b.dataset.activity; save(); buildStart(); } });
 $('goBtn').addEventListener('click', () => startFlying());
 
 function showStart() {
+  exitReal();
   game.state = 'start';
   buildStart();
   updatePadStatus();
@@ -1529,6 +1617,8 @@ function showStart() {
 }
 function startFlying() {
   sound.init();
+  if (settings.activity === 'real' && !rw) { enterReal(); return; }
+  if (settings.activity !== 'real') exitReal();
   $('start').hidden = true;
   $('topbar').hidden = false;
   $('touch').hidden = !isTouch;
@@ -1785,8 +1875,12 @@ function frame(now) {
   if (game.toastT > 0) { game.toastT -= dt; if (game.toastT <= 0) $('toast').classList.remove('show'); }
 
   let pose;
-  if (game.state === 'fly' || game.state === 'crash' || game.state === 'results') {
+  if (game.state === 'loading') {
+    pose = { pos: drone.s.pos, q: drone.s.q, m: [0, 0, 0, 0] };
+    updateRealLoading(realDt);
+  } else if (game.state === 'fly' || game.state === 'crash' || game.state === 'results') {
     game.prevPos = { ...drone.s.pos };
+    if (rw) rw.probe(drone.s.pos);
     if (game.state === 'fly') updateShot(dt);
     drone.update(dt, input);
     if (game.state === 'fly') {
@@ -1812,7 +1906,13 @@ function frame(now) {
     pose = { pos: drone.s.pos, q: drone.s.q, m: [0, 0, 0, 0] };
   }
 
-  if (game.state === 'start' || game.state === 'boot' || (game.state === 'menu' && game.resumeTo === 'start')) {
+  if (game.state === 'loading') {
+    // Câmera alta olhando o ponto de partida enquanto a cidade carrega.
+    camera.position.set(Math.cos(game.loadT * 0.1) * 420, 320, Math.sin(game.loadT * 0.1) * 420);
+    camera.lookAt(0, 0, 0);
+    setFovH(80);
+    camera.updateProjectionMatrix();
+  } else if (game.state === 'start' || game.state === 'boot' || (game.state === 'menu' && game.resumeTo === 'start')) {
     // Sobrevoo cinematográfico atrás da tela inicial.
     flyby.a += dt * 0.035;
     const r = 210;
@@ -1851,6 +1951,7 @@ function frame(now) {
     L.sunUv.value.set(sp.x * 0.5 + 0.5, sp.y * 0.5 + 0.5);
     L.sunAmt.value += (amt - L.sunAmt.value) * Math.min(1, realDt * 8);
   }
+  if (rw) rw.update(camera, renderer, settings.quality);
   post.render(realDt);
   media.afterRender(() => post.render(0));
   if (media.recording) $('recTime').textContent = fmtDur(media.recTime);
@@ -1889,6 +1990,10 @@ buildGates();
 buildPads();
 buildPitArea();
 scenery = buildScenery(scene, world, { sunDir, sun, quality: settings.quality });
+// Tudo que é do mundo procedural vai para um grupo que some no modo Mundo Real.
+const proc = new THREE.Group();
+for (const o of [...scene.children]) if (![sky, hemi, sun, sun.target].includes(o)) proc.add(o);
+scene.add(proc);
 setTimeOfDay(settings.timeOfDay);
 applySettingsToDrone();
 setModel(settings.preset);

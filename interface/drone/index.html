@@ -152,6 +152,11 @@
   #galMedia img, #galMedia video { width: 100%; max-height: 52vh; object-fit: contain; background: #000; border-radius: 6px; display: block; }
   #gallery.viewing .gal { display: none; }
   @media (pointer: coarse) { .tb.desk { display: none; } }
+  .realcfg { margin-top: 12px; display: grid; gap: 10px 14px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); padding: 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); }
+  .realcfg .wide { grid-column: 1 / -1; }
+  .realcfg input[type="password"] { background: #0a0e11; color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; font: inherit; min-width: 0; }
+  #realMsg.err { color: var(--bad); }
+  #attrib { position: absolute; left: 50%; transform: translateX(-50%); bottom: calc(4px + env(safe-area-inset-bottom, 0px)); font-size: 11px; color: rgba(255,255,255,.85); text-shadow: 0 1px 2px #000; pointer-events: none; z-index: 3; white-space: nowrap; max-width: 90vw; overflow: hidden; text-overflow: ellipsis; }
   #loading { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--mono); color: var(--muted); z-index: 20; background: var(--bg); padding: 0 16px; text-align: center; }
 
   @media (max-width: 640px) {
@@ -230,6 +235,13 @@
       <div>
         <div class="label">Atividade</div>
         <div class="cards" id="activityCards"></div>
+        <div id="realCfg" class="realcfg" hidden>
+          <label class="field" for="rw-place"><span>Lugar</span><select id="rw-place"></select></label>
+          <label class="field" for="rw-lat" data-custom><span>Latitude</span><input id="rw-lat" type="number" step="0.00001"></label>
+          <label class="field" for="rw-lon" data-custom><span>Longitude</span><input id="rw-lon" type="number" step="0.00001"></label>
+          <label class="field wide" for="rw-key"><span>Chave da Google Maps Platform (Map Tiles API)</span><input id="rw-key" type="password" autocomplete="off" spellcheck="false" placeholder="AIza…"></label>
+          <p class="note" id="realMsg">A chave fica salva só neste navegador. Para criar: console.cloud.google.com → ative a <b>Map Tiles API</b> → Credenciais → Criar chave de API → restrinja ao endereço onde você abre o simulador. As primeiras 1.000 sessões do mês são grátis.</p>
+        </div>
       </div>
       <div>
         <div class="label">Comandos</div>
@@ -323,13 +335,16 @@
     </div>
   </section>
 
+  <div id="attrib" hidden></div>
   <div id="loading">Carregando motor 3D…</div>
 </div>
 
 <script type="importmap">
 { "imports": {
-  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+  "3d-tiles-renderer/three": "https://cdn.jsdelivr.net/npm/3d-tiles-renderer@0.5.3/build/index.three.js",
+  "3d-tiles-renderer/plugins": "https://cdn.jsdelivr.net/npm/3d-tiles-renderer@0.5.3/build/index.plugins.js"
 } }
 </script>
 <script type="module">
