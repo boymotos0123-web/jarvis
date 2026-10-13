@@ -69,7 +69,7 @@ export function cellOcv(soc) {
 // qt = razão torque/empuxo da hélice (m); cda = área×Cd por eixo do corpo [lado, topo, frente].
 export const PRESETS = {
   racer: {
-    name: 'Freestyle 5"', short: '5" FREESTYLE', desc: '6S · 650 g · empuxo/peso ≈ 10:1',
+    name: 'Freestyle 5"', short: '5" FREESTYLE', desc: '6S · 650 g · empuxo/peso ≈ 10:1', style: 'freestyle',
     mass: 0.65, arm: 0.08, inertia: [0.0024, 0.0042, 0.0021],
     tmax: 16, rpm: 34000, tau: 0.022, qt: 0.014, propR: 0.0635, pitch: 0.109,
     cells: 6, capacity: 1300, rint: 0.035, eff: 0.38, cda: [0.012, 0.03, 0.012], rotorDrag: 0.12,
@@ -77,7 +77,7 @@ export const PRESETS = {
     rates: { roll: { rcRate: 1.0, superRate: 0.7, expo: 0.0 }, pitch: { rcRate: 1.0, superRate: 0.7, expo: 0.0 }, yaw: { rcRate: 1.0, superRate: 0.65, expo: 0.0 } },
   },
   cinewhoop: {
-    name: 'Cinewhoop 3"', short: 'CINEWHOOP 3"', desc: '4S · 380 g · dutos de proteção',
+    name: 'Cinewhoop 3"', short: 'CINEWHOOP 3"', desc: '4S · 380 g · dutos de proteção', style: 'duct',
     mass: 0.38, arm: 0.055, inertia: [0.0009, 0.0016, 0.0008],
     tmax: 5.4, rpm: 27000, tau: 0.03, qt: 0.012, propR: 0.038, pitch: 0.075,
     cells: 4, capacity: 850, rint: 0.05, eff: 0.3, cda: [0.014, 0.036, 0.014], rotorDrag: 0.2,
@@ -85,7 +85,7 @@ export const PRESETS = {
     rates: { roll: { rcRate: 0.9, superRate: 0.6, expo: 0.2 }, pitch: { rcRate: 0.9, superRate: 0.6, expo: 0.2 }, yaw: { rcRate: 0.9, superRate: 0.5, expo: 0.2 } },
   },
   camera: {
-    name: 'Câmera (estilo DJI)', short: 'CAM DRONE', desc: '3S · 900 g · gimbal + GPS',
+    name: 'Câmera 900 g (estilo DJI Air)', short: 'CAM DRONE', desc: '3S · 900 g · gimbal + GPS', style: 'camera',
     mass: 0.9, arm: 0.125, inertia: [0.0075, 0.013, 0.0068],
     tmax: 5.6, rpm: 10500, tau: 0.055, qt: 0.02, propR: 0.114, pitch: 0.11,
     cells: 3, capacity: 4000, rint: 0.04, eff: 0.45, cda: [0.02, 0.05, 0.02], rotorDrag: 0.25,
@@ -93,8 +93,33 @@ export const PRESETS = {
     maxSpeed: 16, maxClimb: 5, maxDescent: 3.5,
     rates: { roll: { rcRate: 0.7, superRate: 0.3, expo: 0.3 }, pitch: { rcRate: 0.7, superRate: 0.3, expo: 0.3 }, yaw: { rcRate: 0.6, superRate: 0.2, expo: 0.3 } },
   },
+  mini: {
+    name: 'Mini 249 g (estilo DJI Mini)', short: 'MINI 249', desc: '2S · 249 g · gimbal 3 eixos · ~30 min', style: 'camera',
+    mass: 0.249, arm: 0.075, inertia: [0.0011, 0.0019, 0.001],
+    tmax: 1.55, rpm: 16000, tau: 0.04, qt: 0.016, propR: 0.076, pitch: 0.08,
+    cells: 2, capacity: 2590, rint: 0.03, eff: 0.3, cda: [0.008, 0.02, 0.008], rotorDrag: 0.06,
+    crash: 4, camTilt: 0, fov: 82, mode: 'pos', maxAngle: 30, scale: 0.85, gimbal: true,
+    maxSpeed: 16, maxClimb: 5, maxDescent: 3.5,
+    rates: { roll: { rcRate: 0.7, superRate: 0.3, expo: 0.3 }, pitch: { rcRate: 0.7, superRate: 0.3, expo: 0.3 }, yaw: { rcRate: 0.6, superRate: 0.2, expo: 0.3 } },
+  },
+  avata: {
+    name: 'FPV com dutos (estilo DJI Avata)', short: 'AVATA', desc: '4S · 377 g · lente 155° · modos N/S/M', style: 'duct',
+    mass: 0.377, arm: 0.06, inertia: [0.0011, 0.0019, 0.001],
+    tmax: 3.3, rpm: 30000, tau: 0.03, qt: 0.012, propR: 0.037, pitch: 0.06,
+    cells: 4, capacity: 2150, rint: 0.04, eff: 0.38, cda: [0.013, 0.034, 0.013], rotorDrag: 0.15,
+    crash: 12, camTilt: 8, fov: 135, mode: 'angle', maxAngle: 42, scale: 0.8,
+    rates: { roll: { rcRate: 0.9, superRate: 0.55, expo: 0.25 }, pitch: { rcRate: 0.9, superRate: 0.55, expo: 0.25 }, yaw: { rcRate: 0.8, superRate: 0.45, expo: 0.25 } },
+  },
+  longrange: {
+    name: 'Long Range 7"', short: '7" LONG RANGE', desc: '6S Li-ion 4000 mAh · 950 g · GPS', style: 'freestyle',
+    mass: 0.95, arm: 0.115, inertia: [0.0058, 0.0105, 0.0052],
+    tmax: 14, rpm: 22000, tau: 0.035, qt: 0.016, propR: 0.089, pitch: 0.1,
+    cells: 6, capacity: 4000, rint: 0.11, eff: 0.42, cda: [0.014, 0.04, 0.014], rotorDrag: 0.15,
+    crash: 9, camTilt: 20, fov: 110, mode: 'acro', maxAngle: 55, scale: 1.3,
+    rates: { roll: { rcRate: 0.85, superRate: 0.6, expo: 0.15 }, pitch: { rcRate: 0.85, superRate: 0.6, expo: 0.15 }, yaw: { rcRate: 0.8, superRate: 0.5, expo: 0.15 } },
+  },
   whoop: {
-    name: 'Tiny Whoop 65 mm', short: 'TINY WHOOP', desc: '1S · 32 g · para voar perto de tudo',
+    name: 'Tiny Whoop 65 mm', short: 'TINY WHOOP', desc: '1S · 32 g · para voar perto de tudo', style: 'duct',
     mass: 0.032, arm: 0.023, inertia: [0.000013, 0.000021, 0.000012],
     tmax: 0.25, rpm: 50000, tau: 0.02, qt: 0.006, propR: 0.0155, pitch: 0.022,
     cells: 1, capacity: 300, rint: 0.15, eff: 0.15, cda: [0.0016, 0.0042, 0.0016], rotorDrag: 0.006,
@@ -562,7 +587,7 @@ export class Drone {
       if (hit.pen > maxPen) { maxPen = hit.pen; push = scl(n, hit.pen); }
       if (vn0 < 0) {
         const impact = -vn0;
-        if (s.armed && impact > p.crash) this.crash(impact, hit.kind);
+        if (s.armed && (impact > p.crash || hit.kind === 'water')) this.crash(impact, hit.kind);
         else if (impact > 1.5) this.emit('bump', { impact, kind: hit.kind, prop: !!c.prop });
       }
       const e = vn0 < -1.5 ? (c.prop ? 0.3 : 0.15) : 0;

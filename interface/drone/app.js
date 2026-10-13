@@ -4,6 +4,8 @@ import { Sky } from 'three/addons/objects/Sky.js';
 import { createWorld, mulberry32 } from './world.js';
 import { Drone, PRESETS, MODES, Q, rateDps, clamp } from './sim.js';
 import { createMedia } from './media.js';
+import { buildScenery } from './scenery.js';
+import { createPost } from './post.js';
 
 const $ = (id) => document.getElementById(id);
 const D2R = Math.PI / 180;
@@ -60,6 +62,8 @@ renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(80, 1, 0.02, 6000);
+const post = createPost(renderer, scene, camera);
+let scenery = null;
 scene.fog = new THREE.Fog(0xb9c8d4, 300, 1700);
 
 const sky = new Sky();
@@ -97,6 +101,9 @@ function setTimeOfDay(h) {
   sun.color.setRGB(1, 0.86 - 0.22 * warm, 0.72 - 0.38 * warm);
   hemi.intensity = 0.18 + 0.5 * day;
   renderer.toneMappingExposure = 0.42 + 0.18 * (1 - day);
+  game.night = 1 - clamp((elev + 4) / 14, 0, 1);
+  game.day = day;
+  scenery?.setNight(game.night);
   const fog = new THREE.Color().setRGB(0.62 + 0.25 * warm * day, 0.7 - 0.05 * warm, 0.78 - 0.2 * warm).multiplyScalar(0.25 + 0.75 * day);
   scene.fog.color.copy(fog);
   if (envRT) envRT.dispose();
@@ -360,29 +367,45 @@ function buildDroneModel(key) {
   const g = new THREE.Group();
   const carbon = new THREE.MeshStandardMaterial({ color: 0x15181c, roughness: 0.42, metalness: 0.35 });
   const metal = new THREE.MeshStandardMaterial({ color: 0x9aa3ab, metalness: 0.9, roughness: 0.28 });
-  const accentHex = { racer: 0xff8a00, cinewhoop: 0x22b3ff, camera: 0x9aa0a6, whoop: 0xff3b6b }[key];
+  const accentHex = { racer: 0xff8a00, cinewhoop: 0x22b3ff, camera: 0x9aa0a6, whoop: 0xff3b6b, mini: 0xd0d3d6, avata: 0x7a8088, longrange: 0x2bd47a }[key];
+  const style = P.style;
   const accent = new THREE.MeshStandardMaterial({ color: accentHex, roughness: 0.45, metalness: 0.1 });
   const plastic = new THREE.MeshStandardMaterial({ color: 0x5b6066, roughness: 0.55 });
   const add = (geo, mat, x, y, z, parent = g) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; parent.add(m); return m; };
   const motorPos = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
   const spin = [-1, 1, 1, -1];
 
-  if (key === 'camera') {
-    add(new THREE.BoxGeometry(0.1 * u * 0.6, 0.055 * s, 0.2 * u * 0.62), plastic, 0, 0, 0);
-    add(new THREE.BoxGeometry(0.06 * u * 0.6, 0.02 * s, 0.1 * u * 0.6), new THREE.MeshStandardMaterial({ color: 0x3a3e43, roughness: 0.4 }), 0, 0.035 * s, 0.01);
+  if (style === 'camera') {
+    // Corpo arredondado, braços dobráveis, sensores frontais e gimbal sob o nariz.
+    const k = a / 0.125;
+    const shell = new THREE.MeshStandardMaterial({ color: key === 'mini' ? 0xc9ccd0 : 0x3d4146, roughness: 0.42, metalness: 0.15 });
+    plastic.color.copy(shell.color);
+    const body = add(new THREE.CapsuleGeometry(0.03 * k, 0.1 * k, 6, 16).rotateX(Math.PI / 2), shell, 0, 0, 0);
+    body.scale.set(1.35, 0.85, 1);
+    add(new THREE.BoxGeometry(0.05 * k, 0.012 * k, 0.09 * k), new THREE.MeshStandardMaterial({ color: 0x1d2024, roughness: 0.3, metalness: 0.4 }), 0, 0.024 * k, 0.012 * k);
+    const sensor = new THREE.MeshStandardMaterial({ color: 0x05070a, roughness: 0.1, metalness: 0.8 });
+    for (const sx of [-1, 1]) add(new THREE.CircleGeometry(0.006 * k, 16), sensor, sx * 0.016 * k, 0.008 * k, -0.081 * k);
     for (const [sx, sz] of motorPos) {
-      const arm = add(new THREE.BoxGeometry(0.018 * s, 0.014 * s, a * Math.SQRT2), plastic, sx * a / 2, 0.005 * s, sz * a / 2);
+      const arm = add(new THREE.BoxGeometry(0.016 * k, 0.011 * k, a * Math.SQRT2 * 0.95), plastic, sx * a / 2, 0.006 * k, sz * a / 2);
       arm.rotation.y = Math.atan2(sx, sz);
-      if (sz < 0) add(new THREE.BoxGeometry(0.006 * s, 0.05 * s, 0.012 * s), plastic, sx * a * 0.9, -0.03 * s, sz * a * 0.9);
-      else add(new THREE.BoxGeometry(0.006 * s, 0.05 * s, 0.012 * s), plastic, sx * a * 0.4, -0.03 * s, sz * a * 0.4);
+      add(new THREE.BoxGeometry(0.005 * k, 0.045 * k, 0.01 * k), plastic, sx * a * (sz < 0 ? 0.9 : 0.4), -0.026 * k, sz * a * (sz < 0 ? 0.9 : 0.4));
     }
     const gimbal = new THREE.Group();
-    gimbal.position.set(0, -0.022 * s, -0.12 * u * 0.62);
+    gimbal.position.set(0, -0.02 * k, -0.105 * k);
     add(new THREE.BoxGeometry(0.03 * s, 0.025 * s, 0.02 * s), new THREE.MeshStandardMaterial({ color: 0x202326 }), 0, 0, 0, gimbal);
     add(new THREE.CylinderGeometry(0.008 * s, 0.008 * s, 0.006 * s, 16).rotateX(Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0x0a2440, metalness: 0.9, roughness: 0.1 }), 0, 0, -0.012 * s, gimbal);
     g.add(gimbal);
     g.userData.gimbal = gimbal;
   } else {
+    if (key === 'avata') {
+      const shell = new THREE.MeshStandardMaterial({ color: 0x4a4f56, roughness: 0.45 });
+      const body = add(new THREE.CapsuleGeometry(0.028, 0.06, 6, 14).rotateX(Math.PI / 2), shell, 0, 0.02, 0);
+      body.scale.set(1.25, 0.9, 1);
+    }
+    if (key === 'longrange') {
+      add(new THREE.CylinderGeometry(0.014 * u, 0.014 * u, 0.006 * u, 16), new THREE.MeshStandardMaterial({ color: 0x1a1d22 }), 0, 0.062 * u, 0.045 * u);
+      add(new THREE.CylinderGeometry(0.0012 * u, 0.0012 * u, 0.09 * u, 5), new THREE.MeshStandardMaterial({ color: 0x111111 }), 0, 0.09 * u, 0.07 * u);
+    }
     const len = a * 2 * Math.SQRT2 + 0.03 * u;
     for (const rot of [Math.PI / 4, -Math.PI / 4]) {
       const arm = add(new THREE.BoxGeometry(0.013 * u + 0.002, 0.005 * u + 0.001, len), carbon, 0, 0, 0);
@@ -408,13 +431,13 @@ function buildDroneModel(key) {
   const ledMatF = new THREE.MeshBasicMaterial({ color: 0x30ff70 });
   motorPos.forEach(([sx, sz], i) => {
     const mx = sx * a, mz = sz * a;
-    const mr = key === 'camera' ? 0.014 * s : 0.012 * u + 0.002;
+    const mr = style === 'camera' ? 0.012 * s : 0.012 * u + 0.002;
     add(new THREE.CylinderGeometry(mr, mr, mr * 1.4, 16), metal, mx, 0.008 * s, mz).material = new THREE.MeshStandardMaterial({ color: key === 'racer' ? 0x2a2d31 : 0x9aa3ab, metalness: 0.85, roughness: 0.3 });
     const rotor = new THREE.Group();
     rotor.position.set(mx, 0.02 * s, mz);
-    const bladeMat = new THREE.MeshStandardMaterial({ color: key === 'camera' ? 0xd8d8d8 : accentHex, roughness: 0.5, transparent: true });
+    const bladeMat = new THREE.MeshStandardMaterial({ color: style === 'camera' ? 0x2a2d31 : accentHex, roughness: 0.5, transparent: true });
     const blades = new THREE.Group();
-    const nb = key === 'camera' ? 2 : key === 'whoop' ? 4 : 3;
+    const nb = style === 'camera' ? 2 : key === 'whoop' ? 4 : 3;
     for (let b = 0; b < nb; b++) {
       const bl = new THREE.Mesh(new THREE.BoxGeometry(P.propR * 0.96, 0.0016 * u + 0.0005, P.propR * 0.22).translate(P.propR * 0.48, 0, 0), bladeMat);
       bl.rotation.y = (b / nb) * Math.PI * 2;
@@ -423,11 +446,11 @@ function buildDroneModel(key) {
       blades.add(bl);
     }
     rotor.add(blades);
-    const disc = new THREE.Mesh(new THREE.CircleGeometry(P.propR, 32).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: key === 'camera' ? 0xdddddd : accentHex, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }));
+    const disc = new THREE.Mesh(new THREE.CircleGeometry(P.propR, 32).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ color: style === 'camera' ? 0x777777 : accentHex, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }));
     rotor.add(disc);
     g.add(rotor);
-    if (key === 'cinewhoop' || key === 'whoop') {
-      const duct = add(new THREE.CylinderGeometry(P.propR * 1.1, P.propR * 1.1, 0.03 * u, 28, 1, true), new THREE.MeshStandardMaterial({ color: key === 'whoop' ? 0x1a1a1f : 0x15181c, roughness: 0.5, side: THREE.DoubleSide }), mx, 0.016 * s, mz);
+    if (style === 'duct') {
+      const duct = add(new THREE.CylinderGeometry(P.propR * 1.1, P.propR * 1.1, 0.03 * u, 28, 1, true), new THREE.MeshStandardMaterial({ color: key === 'whoop' ? 0x1a1a1f : key === 'avata' ? 0x6b7078 : 0x15181c, roughness: 0.5, side: THREE.DoubleSide }), mx, 0.016 * s, mz);
       duct.castShadow = true;
     }
     props.push({ blades, disc, bladeMat, spin: spin[i], angle: rnd() * 6 });
@@ -821,7 +844,7 @@ drone.on('crash', (e) => {
   setTimeout(() => {
     if (game.state !== 'fly' || !drone.s.crashed) return;
     game.state = 'crash';
-    const kinds = { ground: 'chão', building: 'prédio', container: 'container', tree: 'árvore', gate: 'portal' };
+    const kinds = { ground: 'chão', building: 'prédio', container: 'container', tree: 'árvore', gate: 'portal', water: 'água', pole: 'poste' };
     $('crashStats').innerHTML = [
       ['Impacto', `${e.impact.toFixed(1)} m/s`], ['Contra', kinds[e.kind] || e.kind],
       ['Tempo de voo', fmt(game.crashInfo.time)], ['Bateria usada', `${drone.bat.mah.toFixed(0)} mAh`],
@@ -838,7 +861,10 @@ function fmt(t) {
 }
 
 // ---------- foto, vídeo e galeria ----------
-const media = createMedia({ canvas: renderer.domElement, renderer, audio: () => (sound.ctx ? sound : null), onChange: () => updateMediaUI() });
+const media = createMedia({
+  canvas: renderer.domElement, renderer, audio: () => (sound.ctx ? sound : null), onChange: () => updateMediaUI(),
+  setPixelRatio: (v) => { renderer.setPixelRatio(v); post.resize(); },
+});
 
 function flashShot() {
   const f = $('flash');
@@ -1243,15 +1269,18 @@ let osdW = 0, osdH = 0, dpr = 1;
 
 function resize() {
   const q = settings.quality;
-  const pr = q === 'low' ? Math.min(devicePixelRatio, 1) * 0.75 : q === 'medium' ? Math.min(devicePixelRatio, 1.25) : Math.min(devicePixelRatio, 2);
+  const pr = q === 'low' ? Math.min(devicePixelRatio, 1) * 0.75 : q === 'medium' ? Math.min(devicePixelRatio, 1.25) : q === 'high' ? Math.min(devicePixelRatio, 1.5) : Math.min(devicePixelRatio, 2);
   renderer.setPixelRatio(pr);
   renderer.setSize(innerWidth, innerHeight, false);
+  post.enabled = q !== 'low';
+  post.setSamples(q === 'medium' ? 0 : 4);
+  post.resize();
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
   dpr = Math.min(devicePixelRatio, 2);
   osd.width = Math.round(innerWidth * dpr); osd.height = Math.round(innerHeight * dpr);
   osdW = innerWidth; osdH = innerHeight;
-  const sm = q === 'low' ? 0 : q === 'medium' ? 1024 : 2048;
+  const sm = q === 'low' ? 0 : q === 'medium' ? 1024 : q === 'high' ? 2048 : 4096;
   renderer.shadowMap.enabled = sm > 0;
   sun.castShadow = sm > 0;
   if (sm && sun.shadow.mapSize.x !== sm) { sun.shadow.mapSize.set(sm, sm); sun.shadow.map?.dispose(); sun.shadow.map = null; }
@@ -1596,7 +1625,8 @@ function renderMenu() {
     h += range('m-dead', 'Zona morta', 0, 0.15, 0.005, settings.deadband, (v) => `${Math.round(v * 100)}%`);
     h += `<p class="note">“Detectar”: clique e mova só aquele stick até o fim. Botões do gamepad: A armar · B reset · X modo · Y câmera · Start menu. Teclado: W/S acelerador, A/D yaw, setas pitch/roll, Shift acelera o ajuste do acelerador.</p>`;
   } else {
-    h += select('v-quality', 'Qualidade gráfica', [['low', 'Baixa (celular modesto)'], ['medium', 'Média'], ['high', 'Alta (sombras 2K)']], settings.quality);
+    h += select('v-quality', 'Qualidade gráfica', [['low', 'Baixa (celular modesto)'], ['medium', 'Média (bloom e reflexo na água)'], ['high', 'Alta (grama, sombras 2K, antisserrilhado)'], ['ultra', 'Ultra (PC com placa de vídeo)']], settings.quality);
+    h += `<p class="note">Grama, reflexo da água e reflexo do sol mudam ao recarregar a página.</p>`;
     h += range('v-volume', 'Volume', 0, 1, 0.05, settings.volume, (v) => `${Math.round(v * 100)}%`);
     h += check('v-map', 'Minimapa (N)', settings.showMap);
     h += check('v-bb', 'Blackbox ao vivo: setpoint × gyro e motores (B)', settings.showBlackbox);
@@ -1784,10 +1814,10 @@ function frame(now) {
 
   if (game.state === 'start' || game.state === 'boot' || (game.state === 'menu' && game.resumeTo === 'start')) {
     // Sobrevoo cinematográfico atrás da tela inicial.
-    flyby.a += dt * 0.06;
-    const r = 70;
-    camera.position.set(Math.cos(flyby.a) * r, 24 + Math.sin(flyby.a * 2) * 4, Math.sin(flyby.a) * r);
-    camera.lookAt(0, 4, 0);
+    flyby.a += dt * 0.035;
+    const r = 210;
+    camera.position.set(40 + Math.cos(flyby.a) * r, 55 + Math.sin(flyby.a * 2) * 10, 120 + Math.sin(flyby.a) * r);
+    camera.lookAt(40, 10, 140);
     setFovH(85);
     camera.updateProjectionMatrix();
     updateModel(pose, dt);
@@ -1802,8 +1832,27 @@ function frame(now) {
   const flying = game.state === 'fly' || game.state === 'crash' || game.state === 'results';
   if (game.race) { const gv = gateViz[game.race.next]; if (gv) gv.glow.material.opacity = 0.08 + 0.08 * Math.sin(now / 180); }
 
-  renderer.render(scene, camera);
-  media.afterRender(() => renderer.render(scene, camera));
+  // Lente: grande-angular com distorção na FPV, mais limpa nas outras câmeras.
+  const fpvLens = game.view === 'fpv' && !PRESETS[settings.preset].gimbal && (game.state === 'fly' || game.state === 'crash' || game.state === 'results');
+  const L = post.lens;
+  L.distortion.value = fpvLens ? clamp((perPreset().fov - 90) / 160, 0, 0.32) : 0;
+  L.aberration.value = fpvLens ? 0.0035 : 0.001;
+  L.vignette.value = fpvLens ? 0.5 : 0.25;
+  L.grain.value = fpvLens && settings.video === 'analog' ? 0.06 : 0.012;
+  scenery?.update(realDt, { day: game.day ?? 1, wind: settings.wind.speed });
+  // Posição do sol na tela e se está encoberto (prédios/terreno) para o reflexo na lente.
+  {
+    const sp = tmpV.copy(sunDir).multiplyScalar(3000).add(camera.position).project(camera);
+    let amt = 0;
+    if (sp.z < 1 && Math.abs(sp.x) < 1.3 && Math.abs(sp.y) < 1.3 && sunDir.y > -0.02) {
+      const cp = camera.position, far = { x: cp.x + sunDir.x * 400, y: cp.y + sunDir.y * 400, z: cp.z + sunDir.z * 400 };
+      amt = (1 - world.lineOfSight(cp, far)) * clamp(1.3 - Math.max(Math.abs(sp.x), Math.abs(sp.y)), 0, 1) * (game.day ?? 1);
+    }
+    L.sunUv.value.set(sp.x * 0.5 + 0.5, sp.y * 0.5 + 0.5);
+    L.sunAmt.value += (amt - L.sunAmt.value) * Math.min(1, realDt * 8);
+  }
+  post.render(realDt);
+  media.afterRender(() => post.render(0));
   if (media.recording) $('recTime').textContent = fmtDur(media.recTime);
 
   const tel = drone.telemetry();
@@ -1839,6 +1888,7 @@ buildStructures();
 buildGates();
 buildPads();
 buildPitArea();
+scenery = buildScenery(scene, world, { sunDir, sun, quality: settings.quality });
 setTimeOfDay(settings.timeOfDay);
 applySettingsToDrone();
 setModel(settings.preset);

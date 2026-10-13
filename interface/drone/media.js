@@ -53,7 +53,8 @@ async function saveFile(filename, blob) {
   return 'saved';
 }
 
-export function createMedia({ canvas, renderer, audio, onChange }) {
+export function createMedia({ canvas, renderer, audio, onChange, setPixelRatio }) {
+  const setPR = setPixelRatio || ((v) => renderer.setPixelRatio(v));
   const items = [];
   let db = null;
   const ready = openDb().then(async (d) => {
@@ -92,7 +93,7 @@ export function createMedia({ canvas, renderer, audio, onChange }) {
         const pr = renderer.getPixelRatio();
         const maxW = 4096;
         const target = Math.min(pr * mult, maxW / canvas.clientWidth);
-        renderer.setPixelRatio(target);
+        setPR(target);
         renderFn();
         const w = canvas.width, h = canvas.height;
         const thumbP = thumbFrom(canvas, w, h);
@@ -102,7 +103,7 @@ export function createMedia({ canvas, renderer, audio, onChange }) {
           resolve(await store(item));
         }, 'image/jpeg', 0.94);
         // toBlob já copiou a imagem; volta à resolução normal.
-        renderer.setPixelRatio(pr);
+        setPR(pr);
       });
     });
   }

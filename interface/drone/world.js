@@ -79,6 +79,14 @@ export function createWorld(seed = 1337) {
   const rand = mulberry32(seed);
   const noise = makeValueNoise(seed);
   const FIELD_R = 150;
+  // Lago a leste e cidade ao norte do campo.
+  const WATER_Y = -2.5;
+  const LAKE = { x: 250, z: -40, r: 85 };
+  const TOWN = { x0: -112, x1: 112, z0: 178, z1: 338, edge: 45 };
+  const townMask = (x, z) => {
+    const dx = Math.max(TOWN.x0 - x, 0, x - TOWN.x1), dz = Math.max(TOWN.z0 - z, 0, z - TOWN.z1);
+    return 1 - smoothstep(0, TOWN.edge, Math.hypot(dx, dz));
+  };
 
   // ---------- terreno em grade (a mesma grade gera a malha 3D) ----------
   const SIZE = 1400, SEGS = 280, CELL = SIZE / SEGS, HALF = SIZE / 2, N = SEGS + 1;
@@ -94,7 +102,11 @@ export function createWorld(seed = 1337) {
     for (let ix = 0; ix < N; ix++) {
       const x = ix * CELL - HALF, z = iz * CELL - HALF;
       const f = smoothstep(FIELD_R, FIELD_R + 90, Math.hypot(x, z));
-      heights[iz * N + ix] = rawHeight(x, z) * f;
+      let h = rawHeight(x, z) * f * (1 - townMask(x, z));
+      const lr = LAKE.r * (0.85 + 0.3 * fbm(noise, x * 0.02 + 9, z * 0.02 - 3, 2));
+      const m = smoothstep(lr, lr * 0.45, Math.hypot(x - LAKE.x, z - LAKE.z));
+      h = h * (1 - m) + (WATER_Y - 6) * m;
+      heights[iz * N + ix] = h;
     }
   }
 
@@ -201,6 +213,53 @@ export function createWorld(seed = 1337) {
   const nearStructure = (x, z, m) => structures.some((s) => Math.hypot(x - s.x, z - s.z) < Math.max(s.w, s.d) * 0.75 + m);
   const nearPad = (x, z, m) => pads.some((p) => Math.hypot(x - p.x, z - p.z) < m);
 
+  // ---------- cidade: quarteirões, ruas, postes e prédios ----------
+  const town = [], roads = [], lamps = [];
+  {
+    const BLOCK = 30, ROAD = 9, P = BLOCK + ROAD;
+    const nx = Math.floor((TOWN.x1 - TOWN.x0 + ROAD) / P), nz = Math.floor((TOWN.z1 - TOWN.z0 + ROAD) / P);
+    const ox = (TOWN.x0 + TOWN.x1) / 2 - (nx * P - ROAD) / 2, oz = (TOWN.z0 + TOWN.z1) / 2 - (nz * P - ROAD) / 2;
+    const cx = (TOWN.x0 + TOWN.x1) / 2, cz = (TOWN.z0 + TOWN.z1) / 2;
+    // Ruas em grade (retângulos de asfalto).
+    for (let i = 0; i <= nx; i++) roads.push({ x: ox + i * P - ROAD / 2, z: cz, w: ROAD, d: nz * P + ROAD, axis: 'z' });
+    for (let j = 0; j <= nz; j++) roads.push({ x: cx, z: oz + j * P - ROAD / 2, w: nx * P + ROAD, d: ROAD, axis: 'x' });
+    // Rua de acesso ligando o campo à cidade.
+    roads.push({ x: 0, z: (oz - ROAD / 2 + 60) / 2, w: ROAD, d: oz - ROAD / 2 - 60, axis: 'z' });
+    for (let i = 0; i < nx; i++) {
+      for (let j = 0; j < nz; j++) {
+        const bx = ox + i * P + BLOCK / 2, bz = oz + j * P + BLOCK / 2;
+        const dc = Math.hypot(bx - cx, bz - cz) / 120;
+        if (i === Math.floor(nx / 2) && j === Math.floor(nz / 2)) { town.push({ x: bx, z: bz, w: BLOCK, d: BLOCK, h: 0, style: 'park' }); continue; }
+        // Até 4 prédios por quarteirão, mais altos no centro.
+        const split = rand() < 0.55 ? 2 : 1;
+        const cell = BLOCK / split;
+        for (let a = 0; a < split; a++) {
+          for (let b = 0; b < split; b++) {
+            if (split === 2 && rand() < 0.12) continue;
+            const w = cell - 2 - rand() * 3, d = cell - 2 - rand() * 3;
+            const tall = Math.max(0.15, 1 - dc);
+            const h = Math.round(6 + rand() * 10 + tall * tall * (20 + rand() * 55));
+            const r3 = rand();
+            const style = h > 40 ? (r3 < 0.6 ? 'glass' : 'office') : h > 18 ? (r3 < 0.5 ? 'office' : 'residential') : r3 < 0.5 ? 'brick' : 'residential';
+            const x = bx - BLOCK / 2 + cell * (a + 0.5), z = bz - BLOCK / 2 + cell * (b + 0.5);
+            town.push({ x, z, w, d, h, style });
+            addBox(x, h / 2 - 0.5, z, w / 2, h / 2 + 0.5, d / 2, 0, 'building');
+          }
+        }
+      }
+    }
+    // Postes nos cruzamentos.
+    for (let i = 0; i <= nx; i++) {
+      for (let j = 0; j <= nz; j++) {
+        const x = ox + i * P - ROAD / 2 + ROAD / 2 + 0.6, z = oz + j * P - ROAD / 2 + ROAD / 2 + 0.6;
+        lamps.push({ x, z, h: 7 });
+        addCyl(x, z, 0.12, -0.5, 7.2, 'pole');
+      }
+    }
+    const tallest = town.reduce((m, b) => (b.h > m.h ? b : m), town[0]);
+    pads.push({ x: tallest.x, z: tallest.z, y: tallest.h, r: 1.6, label: String(pads.length) });
+  }
+
   const trees = [];
   let guard = 0;
   while (trees.length < 520 && guard++ < 20000) {
@@ -211,6 +270,7 @@ export function createWorld(seed = 1337) {
     // Bosques: densidade guiada por ruído.
     if (fbm(noise, x * 0.012 + 50, z * 0.012 - 80, 3) < 0.47 && r > 60) continue;
     if (nearTrack(x, z, 9) || nearStructure(x, z, 6) || nearPad(x, z, 12)) continue;
+    if (townMask(x, z) > 0.05 || heightAt(x, z) < WATER_Y + 0.6) continue;
     if (trees.some((t) => Math.abs(t.x - x) < 3 && Math.abs(t.z - z) < 3)) continue;
     const h = 7 + rand() * 9;
     const crown = h * (0.22 + rand() * 0.08);
@@ -219,6 +279,18 @@ export function createWorld(seed = 1337) {
     trees.push({ x, z, y, h, crown, kind, hue: rand() });
     addCyl(x, z, 0.28, y - 1, y + h * 0.4, 'tree');
     addCyl(x, z, crown * 0.75, y + h * 0.3, y + h * 0.97, 'tree');
+  }
+
+  // Árvores do parque central da cidade.
+  for (const pk of town.filter((t) => t.style === 'park')) {
+    for (let i = 0; i < 7; i++) {
+      const a = (i / 7) * Math.PI * 2 + rand() * 0.4, rr = 5 + rand() * 7;
+      const x = pk.x + Math.cos(a) * rr, z = pk.z + Math.sin(a) * rr;
+      const h = 6 + rand() * 4, crown = h * 0.28;
+      trees.push({ x, z, y: 0, h, crown, kind: 'round', hue: rand() });
+      addCyl(x, z, 0.25, -1, h * 0.4, 'tree');
+      addCyl(x, z, crown * 0.75, h * 0.3, h * 0.97, 'tree');
+    }
   }
 
   // ---------- broadphase em grade uniforme ----------
@@ -249,6 +321,10 @@ export function createWorld(seed = 1337) {
       const n = normalAt(px, pz);
       const pen = r - (py - gh) * n.y;
       if (pen > 0) best = { pen, nx: n.x, ny: n.y, nz: n.z, kind: 'ground' };
+    }
+    if (!skipGround && gh < WATER_Y && py - r < WATER_Y) {
+      const pen = WATER_Y - (py - r);
+      if (!best || pen > best.pen) best = { pen, nx: 0, ny: 1, nz: 0, kind: 'water' };
     }
     const list = grid.get(key(Math.floor(px / GCELL), Math.floor(pz / GCELL)));
     if (!list) return best;
@@ -323,7 +399,7 @@ export function createWorld(seed = 1337) {
   return {
     seed, SIZE, SEGS, CELL, HALF, N, heights, FIELD_R,
     heightAt, normalAt, collideSphere, gateCrossed, lineOfSight,
-    gates, structures, pads, trees, colliders,
+    gates, structures, pads, trees, colliders, town, roads, lamps, WATER_Y, LAKE, TOWN,
     spawn: { x: 0, z: 0, yaw: 0 },
     pilot: { x: 0, y: 1.7, z: 7 },
   };
