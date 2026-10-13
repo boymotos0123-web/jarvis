@@ -1583,6 +1583,7 @@ function buildStart() {
     let rec = '';
     if (k === 'race') { const b = store.get('best.' + settings.preset, null); rec = b ? `Recorde: ${fmt(b)}` : 'Sem recorde ainda'; }
     if (k === 'land') { const b = store.get('bestLand.' + settings.preset, 0); rec = b ? `Recorde: ${b} pts` : 'Sem recorde ainda'; }
+    if (k === 'real' && window.claude) rec = 'Só funciona pelo JARVIS ou rodando localmente';
     return cardHTML('activity', k, a.name, a.desc, rec);
   }).join('');
   document.querySelectorAll('[data-preset]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.preset === settings.preset));
