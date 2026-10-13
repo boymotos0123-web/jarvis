@@ -203,6 +203,7 @@ export class Drone {
     this.lastSat = false;
     this.wash = v3();
     this.auto = null;
+    this.vI = v3();
   }
   newPid() { return { i: 0, prevMeas: 0, dF: 0, prevSp: 0, ffF: 0 }; }
 
@@ -452,7 +453,13 @@ export class Drone {
       vD = toWorld(sx * vmax, 0, -sy * vmax);
     }
     const kv = cine || this.auto ? 1.2 : 2.2;
-    let ax = (vD.x - s.vel.x) * kv, az = (vD.z - s.vel.z) * kv;
+    // PI de velocidade: o integral compensa arrasto e vento.
+    const evx = vD.x - s.vel.x, evz = vD.z - s.vel.z;
+    this.vI.x = clamp(this.vI.x + evx * 0.9 * dt, -4, 4);
+    this.vI.z = clamp(this.vI.z + evz * 0.9 * dt, -4, 4);
+    // Ao soltar os sticks, esquece o integral rápido para frear sem passar do ponto.
+    if (!this.auto && sx === 0 && sy === 0) { this.vI.x *= 1 - 3 * dt; this.vI.z *= 1 - 3 * dt; }
+    let ax = evx * kv + this.vI.x, az = evz * kv + this.vI.z;
     const amax = G * Math.tan((this.cfg.maxAngle || 35) * D2R);
     const al = Math.hypot(ax, az);
     if (al > amax) { ax *= amax / al; az *= amax / al; }
@@ -472,7 +479,7 @@ export class Drone {
     // Perto do chão a descida é suavizada (pouso assistido).
     if (vzD < 0) vzD = Math.max(vzD, -Math.max(0.6, this.tel.agl * 0.9));
     if (s.onGround && vzD <= 0.05) {
-      this.vzI = 0; this.altHold = null; this.posHold = null;
+      this.vzI = 0; this.altHold = null; this.posHold = null; this.vI = v3();
       return { upD: v3(0, 1, 0), tBase: 0 };
     }
     const ez = vzD - s.vel.y;
